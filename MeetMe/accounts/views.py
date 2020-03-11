@@ -29,3 +29,17 @@ def register(request):
             return redirect('register')
     else:
         return render(request, 'accounts/register.html')
+def login(request):
+     if request.method=='POST':
+         username=request.POST['username']
+         password=request.POST['password']
+         user=auth.authenticate(username=username,password=password)
+         if user is not None:
+             auth.login(request,user)
+             print('User login')
+             return redirect('/')
+         else:
+             messages.info(request,'Invalid login please check your username and password')
+             return redirect('login')
+     else:
+        return render(request,'accounts/login.html')     
