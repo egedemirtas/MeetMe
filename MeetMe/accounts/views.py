@@ -5,16 +5,16 @@ from .forms import UserRegisterForm
 from django.forms import inlineformset_factory
 
 def register(request):
-    """
+    
     if request.method == 'POST':
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
+        #first_name = request.POST['first_name']
+        #last_name = request.POST['last_name']
         username = request.POST['username']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        email = request.POST['email']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        email = request.POST['mail']
 
-        if password1==password2:
+        if password==confirm_password:
             if User.objects.filter(username=username).exists():
                 messages.info(request, 'Username Already Taken')
                 return redirect('register')
@@ -22,14 +22,15 @@ def register(request):
                 messages.info(request, 'Email Already Taken')
                 return redirect('register')
             else:
-                user = User.objects.create_user(username=username, password=password1, email=email, first_name=first_name, last_name=last_name)
+                user = User.objects.create_user(username=username, password=password, email=email, first_name="", last_name="")
                 user.save()
                 print('user created')
         else:
             messages.info(request, 'Passwords does not match')
             return redirect('register')
-    else:
-        return render(request, 'accounts/register.html')
+    #else:
+    return render(request, 'accounts/register.html', {})
+    
     """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -43,6 +44,7 @@ def register(request):
     else:
         form = UserRegisterForm();
     return render(request, 'accounts/register.html', {'form':form})
+    """
 
 def login(request):
      if request.method=='POST':
