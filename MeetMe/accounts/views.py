@@ -5,7 +5,7 @@ from .forms import UserRegisterForm
 from django.forms import inlineformset_factory
 
 def register(request):
-    
+    """
     if request.method == 'POST':
         #first_name = request.POST['first_name']
         #last_name = request.POST['last_name']
@@ -39,12 +39,14 @@ def register(request):
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account Created for {username}')
             return redirect('register')
-        else: 
-            messages.warning(request, f'Account Name is taken')
+        try:
+            form.password1.validate
+        except:
+             messages.warning(request, f'Password is too weak or does not match')
     else:
         form = UserRegisterForm();
     return render(request, 'accounts/register.html', {'form':form})
-    """
+    
 
 def login(request):
      if request.method=='POST':
