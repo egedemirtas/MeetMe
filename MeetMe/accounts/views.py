@@ -44,7 +44,7 @@ def register(request):
         except:
              messages.warning(request, f'Password is too weak or does not match')
     else:
-        form = UserRegisterForm();
+        form = UserRegisterForm()
     return render(request, 'accounts/register.html', {'form':form})
     
 
