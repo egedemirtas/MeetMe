@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'accounts.apps.AccountsConfig',
     'eventCalendar.apps.EventcalendarConfig',
+    'home.apps.HomeConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
