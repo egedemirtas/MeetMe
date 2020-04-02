@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'eventCalendar.apps.EventcalendarConfig',
     'home.apps.HomeConfig',
+    'googleApi.apps.GoogleapiConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
