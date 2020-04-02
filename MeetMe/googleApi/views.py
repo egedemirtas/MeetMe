@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from apiclient.discovery import build
+from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from django.contrib import messages
 
@@ -19,4 +19,3 @@ def gCalendar(request):
     events=str(events)
     messages.info(request,events)
     return render(request,'googleApi/a.html')
-
