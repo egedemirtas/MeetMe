@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -11,7 +12,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="keywords" content="">
 		<meta name="description" content="">
-		{% load static %}
+
 		<!-- animate css -->
 		<link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
 		<!-- bootstrap css -->
@@ -35,19 +36,23 @@
 		<nav class="navbar navbar-default navbar-fixed-top templatemo-nav" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
-					<button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon icon-bar"></span>
 						<span class="icon icon-bar"></span>
-						<span class="icon icon-bar"></span>
+						<span class="navbar-toggler-icon"></span>
 					</button>
-					<a href="#" class="navbar-brand">Boxer</a>
+					<a href="#" class="navbar-brand">Meet Me</a>
 				</div>
-				<div class="collapse navbar-collapse">
+				<div class="collapse navbar-collapse" id="navbarResponsive">
 					<ul class="nav navbar-nav navbar-right text-uppercase">
 						<li><a href="#home">Home</a></li>
 						<li><a href="#feature">Features</a></li>
-						<li><a href="#download">Login</a></li>
-						<li><a href="#contact">Register</a></li>
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'login' %}">Login</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'register' %}">Register</a>
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -60,8 +65,8 @@
 					<div class="row">
 						<div class="col-md-1"></div>
 						<div class="col-md-10 wow fadeIn" data-wow-delay="0.3s">
-							<h1 class="text-upper">Homepage</h1>
-							<p class="tm-white">Boxer is a fully Responsive, Clean Design, Modern, and Flexible Software Landing Page for startups, businesses and agencies. It is built with HTML5 &amp; CSS3, Bootstrap 3.3.4, Font Awesome 4.3.0, and much more. Designed by <a rel="nofollow" href="http://www.facebook.com/templatemo" target="_parent">templatemo</a>. Images by <a rel="nofollow" href="http://pixabay.com" target="_blank">Pixabay</a></p>
+							<h1 class="text-upper">MEET ME</h1>
+							<p class="tm-white"> Meet Who???? Meet ME:D Your Personal calendar for manage your meatings easier!<a rel="nofollow" href="http://www.facebook.com/templatemo" target="_parent">templatemo</a>. Images by <a rel="nofollow" href="http://pixabay.com" target="_blank">Pixabay</a></p>
 							<img src="{% static 'images/software-img.png' %}" class="img-responsive" alt="home img">
 						</div>
 						<div class="col-md-1"></div>
@@ -76,18 +81,18 @@
 				<div class="row">
 					<div class="col-md-4 wow fadeInUp templatemo-box" data-wow-delay="0.3s">
 						<i class="fa fa-laptop"></i>
-						<h3 class="text-uppercase">RESPONSIVE LAYOUT</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. </p>
+						<h3 class="text-uppercase">Easy Usage</h3>
+						<p>You can see your events, friends and more in one click. </p>
 					</div>
 					<div class="col-md-4 wow fadeInUp templatemo-box" data-wow-delay="0.3s">
 						<i class="fa fa-twitter"></i>
-						<h3 class="text-uppercase">BOOTSTRAP 3.3.4</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. </p>
+						<h3 class="text-uppercase">Fast access to your mails</h3>
+						<p>Now it is time to connect your all jobs and meetings here! </p>
 					</div>
 					<div class="col-md-4 wow fadeInUp templatemo-box" data-wow-delay="0.3s">
 						<i class="fa fa-font"></i>
-						<h3 class="text-uppercase">GOOGLE FONT</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. </p>
+						<h3 class="text-uppercase">Free Register</h3>
+						<p>Be part of the familt free!! </p>
 					</div>
 				</div>
 			</div>
@@ -99,8 +104,8 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-6 wow fadeInLeft" data-wow-delay="0.6s">
-						<h2 class="text-uppercase">Our Software Features</h2>
-						<p>Whaat</p>
+						<h2 class="text-uppercase">Our Calendar Features</h2>
+						<p>Add Events</p>
 						<p><span><i class="fa fa-mobile"></i></span>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 						<p><i class="fa fa-code"></i>Quis autem velis reprehenderit et quis voluptate velit esse quam.</p>
 					</div>
@@ -113,6 +118,7 @@
 		<!-- end feature -->
 
 		<!-- start feature1 -->
+		<!--
 		<section id="feature1">
 			<div class="container">
 				<div class="row">
@@ -128,6 +134,7 @@
 				</div>
 			</div>
 		</section>
+		-->
 		<!-- end feature1 -->
 
 
@@ -140,9 +147,9 @@
 							<h2 class="text-uppercase">Contact Us</h2>
 							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. </p>
 							<address>
-								<p><i class="fa fa-map-marker"></i>36 Street Name, City Name, United States</p>
+								<p><i class="fa fa-map-marker"></i>Sabanci University Campus</p>
 								<p><i class="fa fa-phone"></i> 010-010-0110 or 020-020-0220</p>
-								<p><i class="fa fa-envelope-o"></i> info@company.com</p>
+								<p><i class="fa fa-envelope-o"></i> info@meetme.com</p>
 							</address>
 						</div>
 						<div class="col-md-6 wow fadeInUp" data-wow-delay="0.6s">
@@ -176,7 +183,7 @@
 		<footer>
 			<div class="container">
 				<div class="row">
-					<p>Copyright © 2084 Your Company Name</p>
+					<p>Copyright © 2020 Cs308-team3</p>
 				</div>
 			</div>
 		</footer>

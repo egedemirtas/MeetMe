@@ -31,10 +31,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'home',
+    'accounts',
     'django.contrib.admin',
-    'accounts.apps.AccountsConfig',
+    #'accounts.apps.AccountsConfig',
     'eventCalendar.apps.EventcalendarConfig',
-    'home.apps.HomeConfig',
+    #'home.apps.HomeConfig',
     'googleApi.apps.GoogleapiConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -130,3 +132,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = 'login'
