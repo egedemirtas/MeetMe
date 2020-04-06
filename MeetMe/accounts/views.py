@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
+#from django.contrib.auth import login
 from django.contrib import messages
 from .forms import UserRegisterForm
 from django.forms import inlineformset_factory
@@ -30,7 +31,7 @@ def register(request):
             return redirect('register')
     #else:
     return render(request, 'accounts/register.html', {})
-    
+
     """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -46,7 +47,7 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'accounts/register.html', {'form':form})
-    
+
 
 def login(request):
      if request.method=='POST':
@@ -61,4 +62,4 @@ def login(request):
              messages.info(request,'Invalid login please check your username and password')
              return redirect('login')
      else:
-        return render(request,'accounts/login.html')     
+        return render(request,'accounts/login.html')

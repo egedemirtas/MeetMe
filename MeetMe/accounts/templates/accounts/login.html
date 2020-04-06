@@ -1,221 +1,124 @@
+
 {% load static %}
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<!-- jQuery library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<!-- Popper JS -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 	<title>Login</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-	<style>
-		body {
-			font-family: Arial, Helvetica, sans-serif;
-		}
-
-		* {
-			box-sizing: border-box;
-		}
-
-		/* Button used to open the chat form - fixed at the bottom of the page */
-		.open-button {
-			background-color: #555;
-			color: white;
-			padding: 16px 20px;
-			border: none;
-			cursor: pointer;
-			opacity: 0.8;
-			position: fixed;
-			bottom: 23px;
-			right: 28px;
-			width: 280px;
-		}
-
-		/* The popup chat - hidden by default */
-		.chat-popup {
-			display: none;
-			position: fixed;
-			bottom: 0;
-			right: 15px;
-			border: 3px solid #f1f1f1;
-			z-index: 9;
-		}
-
-		/* Add styles to the form container */
-		.form-container {
-			max-width: 300px;
-			padding: 10px;
-			background-color: white;
-		}
-
-		/* Full-width textarea */
-		.form-container textarea {
-			width: 100%;
-			padding: 15px;
-			margin: 5px 0 22px 0;
-			border: none;
-			background: #f1f1f1;
-			resize: none;
-			min-height: 200px;
-		}
-
-		/* When the textarea gets focus, do something */
-		.form-container textarea:focus {
-			background-color: #ddd;
-			outline: none;
-		}
-
-		/* Set a style for the submit/send button */
-		.form-container .btn {
-			background-color: #4CAF50;
-			color: white;
-			padding: 16px 20px;
-			border: none;
-			cursor: pointer;
-			width: 100%;
-			margin-bottom: 10px;
-			opacity: 0.8;
-		}
-
-		/* Add a red background color to the cancel button */
-		.form-container .cancel {
-			background-color: red;
-		}
-
-		/* Add some hover effects to buttons */
-		.form-container .btn:hover,
-		.open-button:hover {
-			opacity: 1;
-		}
-
-		body {
-			font-family: Arial, Helvetica, sans-serif;
-		}
-
-		#buttonEnter {
-			border: 1px solid;
-			text-shadow: 0 1px 0 #1e3c5e;
-			font-size: .875em;
-			padding: 8px 15px;
-			width: 150px;
-			border-radius: 20px;
-			box-shadow: 0 1px 0 #bbb, 0 1px 0 #9cccf3 inset;
-		}
-	</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="{% static 'images/icons/favicon.ico' %}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'fonts/Linearicons-Free-v1.0.0/icon-font.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/animate/animate.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/css-hamburgers/hamburgers.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/animsition/css/animsition.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/select2/select2.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/daterangepicker/daterangepicker.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/util.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+<!--===============================================================================================-->
 </head>
+<body style="background-color: #666666;">
 
-<body background="http://www.gunainsaat.com/wp-content/uploads/2013/04/Wordpress-Background-Blue-Light.jpg"
-	style="font-family: georgia, garamond, serif; font-size: 17px;">
-	<p id="time" align="right"></p>
-	<script>
-		var d = new Date();
-		document.getElementById("time").innerHTML = d;
-	</script>
-	<h1>
-		<a id="header" href="/">MeetMe!</a>
-	</h1>
-	<p class="reg" align="right">
-		<strong>&gt;&gt;Login/<a class="reg" href="register" style="color:red;">Registration</a></strong>
-	</p>
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<form class="login100-form validate-form">
+					<span class="login100-form-title p-b-43">
+						Login to continue
+					</span>
 
-	<hr />
 
-	<form style="font-family: georgia, garamond, serif;" method="post" id="form" action="login">
-		<!--discount.jsp removed-->
-		{% csrf_token %}
-		<h2>Login</h2>
-		<div class="divTable">
-			<div class="divTableBody">
-				<div class="divTableRow">
-					<div class="divTableCell">Username:</div>
-					<div class="divTableCell">
-						<div class="input-group">
-							<input id="email" type="text" class="form-control" name="username"
-								placeholder="username" required> <span
-								class="input-group-addon"><i
-								class="glyphicon glyphicon-user"></i></span>
-						</div>
+					<div class="wrap-input100 validate-input" data-validate = "Valid Username is required!">
+						<input class="input100" type="text" name="username">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Username</span>
 					</div>
-				</div>
-				<div class="divTableRow">
-					<div class="divTableCell">Password:</div>
-					<div class="divTableCell">
-						<div class="input-group">
-							<input id="password" type="password" class="form-control" name="password"
-								placeholder="Password" required> <span class="input-group-addon"><i
-									class="glyphicon glyphicon-lock"></i></span>
-						</div>
+
+
+					<div class="wrap-input100 validate-input" data-validate="Password is required">
+						<input class="input100" type="password" name="pass">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Password</span>
 					</div>
-				</div>
-				<div class="divTableRow">
-					<div class="divTableCell"></div>
-					<div class="divTableCell">
-						<div class="divTableCell">
-							<input class="form-check-input" type="checkbox" />
+
+					<div class="flex-sb-m w-full p-t-3 p-b-32">
+						<div class="contact100-form-checkbox">
+							<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+							<label class="label-checkbox100" for="ckb1">
+								Remember me
+							</label>
 						</div>
-						<div class="divTableCell">
-							<label class="form-check-label"
-								style="color: white; font-family: georgia, garamond, serif; font-size: 14px;">Remember
-								me </label>
+
+						<div>
+							<a href="{% url 'register' %}" class="txt1">
+								Register
+							</a>
 						</div>
 					</div>
 
-				</div>
-				<div class="divTableRow">
-					<div class="divTableCell">
-						<button class="green" type="submit" value="login" id="buttonEnter">Login</button>
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn">
+							<a href="{% url 'calendar' %}" class="txt1">
+							Login
+						</button>
 					</div>
-					<div class="divTableCell">
-						<a id="redcolor" href="register">Register</a>
+
+					<div class="text-center p-t-46 p-b-20">
+						<span class="txt2">
+							or login using
+						</span>
 					</div>
+
+					<div class="login100-form-social flex-c-m">
+						<a href="#" class="login100-form-social-item flex-c-m bg1 m-r-5">
+							<i class="fa fa-facebook-f" aria-hidden="true"></i>
+						</a>
+
+						<a href="#" class="login100-form-social-item flex-c-m bg2 m-r-5">
+							<i class="fa fa-twitter" aria-hidden="true"></i>
+						</a>
+					</div>
+				</form>
+
+				<div class="login100-more" style="background-image: url({% static 'images/bg-01.jpg' %});">
 				</div>
 			</div>
 		</div>
-	</form>
-	<button class="open-button" onclick="openForm()">For any question</button>
-	<div class="chat-popup" id="myForm">
-		<form action="/action_page.php" class="form-container" style="color:black;">
-
-
-			<label for="msg"><b>Write your question:</b></label>
-			<textarea placeholder="Type message.." name="msg" required></textarea>
-
-			<button type="submit" class="btn">Send</button>
-			<button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-		</form>
 	</div>
 
-	<div>
-		<!--For error display from backend you can change this to js alerts or something else your choice-->
-		{% for message in messages %}
-		<h3> {{ message }}</h3>
-		{% endfor %}
-	</div>
 
-	<script>
-		function openForm() {
-			document.getElementById("myForm").style.display = "block";
-		}
 
-		function closeForm() {
-			document.getElementById("myForm").style.display = "none";
-		}
-	</script>
-	<footer style="text-align:center;">
-		<p>
-			CS308 Team 3 &copy; 2020. All rights reserved. Contact: <a
-				href="cs308team3@sabanciuniv.edu"><em>cs308team3@sabanciuniv.edu
-				</em></a>
-		</p>
-	</footer>
+
+
+<!--===============================================================================================-->
+	<script src="{% static 'vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'vendor/animsition/js/animsition.min.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'vendor/bootstrap/js/popper.js' %}"></script>
+	<script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'vendor/select2/select2.min.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'vendor/daterangepicker/moment.min.js' %}"></script>
+	<script src="{% static 'vendor/daterangepicker/daterangepicker.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'vendor/countdowntime/countdowntime.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'js/main.js' %}"></script>
+
 </body>
-
 </html>
