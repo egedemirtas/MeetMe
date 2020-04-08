@@ -38,3 +38,7 @@ def remove(request):
     event.delete()
     data = {}
     return JsonResponse(data)
+
+def removeCalendar(request):
+    id = request.user.id
+    
