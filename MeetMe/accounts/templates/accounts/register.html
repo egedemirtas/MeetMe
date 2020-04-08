@@ -69,7 +69,14 @@
             <input class="input100" type="password" name="confirm_password">
             <span class="focus-input100"></span>
             <span class="label-input100">Password Confirmation</span>
-          </div>
+		  </div>
+		  
+		  <div>
+			<!--For error display from backend you can change this to js alerts or something else your choice-->
+			{% for message in messages %}
+			<h3> {{ message }}</h3>
+			{% endfor %}
+		</div>
 
           <div>
             <a href="{% url 'login' %}" class="txt1">
