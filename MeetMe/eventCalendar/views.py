@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from eventCalendar.models import Events
+from eventCalendar.models import Events, Calendar
 
 # Create your views here.
 def calendar(request):
@@ -40,5 +40,9 @@ def remove(request):
     return JsonResponse(data)
 
 def removeCalendar(request):
-    id = request.user.id
-    
+    if request.method=='POST':
+        print("deleted")
+        instance = Calendar.objects.get(userID = 5)
+        instance.delete()
+        print("deleted")
+    return render(request,'eventCalendar/calendar1.html')

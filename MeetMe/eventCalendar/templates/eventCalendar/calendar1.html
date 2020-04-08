@@ -8,9 +8,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
-    <form method="post" name="removeCalendar">
+    <form action="removeCalendar"method="POST">
         {% csrf_token %}
-        <button type="submit">xd</button>
+        <input type="text" name="removeCalendar">
+        <button>
+            Register
+        </button>
     </form>
     <script>
         $(document).ready(function () {
