@@ -2,6 +2,7 @@ from django.shortcuts import render
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from django.contrib import messages
+import json
 
 def gCalendar(request):
     flow = InstalledAppFlow.from_client_secrets_file(
