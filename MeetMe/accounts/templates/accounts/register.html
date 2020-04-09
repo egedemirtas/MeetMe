@@ -33,7 +33,8 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-				<form class="login100-form validate-form">
+				<form class="login100-form validate-form" method="post">
+					{% csrf_token %}
 					<span class="login100-form-title p-b-43">
 						Registiration Form
 					</span>
@@ -47,7 +48,7 @@
 
 
 					<div class="wrap-input100 validate-input" data-validate="E-mail is required">
-						<input class="input100" type="text" name="email">
+						<input class="input100" type="text" name="mail">
 						<span class="focus-input100"></span>
 						<span class="label-input100">E-mail</span>
 					</div>
@@ -59,10 +60,23 @@
           </div>
 
           <div class="wrap-input100 validate-input" data-validate="Password is required">
-            <input class="input100" type="password" name="pass">
+            <input class="input100" type="password" name="password">
             <span class="focus-input100"></span>
             <span class="label-input100">Password</span>
-          </div>
+		  </div>
+		  
+		  <div class="wrap-input100 validate-input" data-validate="Password Confirmation">
+            <input class="input100" type="password" name="confirm_password">
+            <span class="focus-input100"></span>
+            <span class="label-input100">Password Confirmation</span>
+		  </div>
+		  
+		  <div>
+			<!--For error display from backend you can change this to js alerts or something else your choice-->
+			{% for message in messages %}
+			<h3> {{ message }}</h3>
+			{% endfor %}
+		</div>
 
           <div>
             <a href="{% url 'login' %}" class="txt1">

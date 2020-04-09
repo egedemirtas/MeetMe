@@ -34,7 +34,8 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-				<form class="login100-form validate-form">
+				<form class="login100-form validate-form" method="POST">
+					{% csrf_token %}
 					<span class="login100-form-title p-b-43">
 						Login to continue
 					</span>
@@ -48,11 +49,16 @@
 
 
 					<div class="wrap-input100 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="pass">
+						<input class="input100" type="password" name="password">
 						<span class="focus-input100"></span>
 						<span class="label-input100">Password</span>
 					</div>
-
+					<div>
+						<!--For error display from backend you can change this to js alerts or something else your choice-->
+						{% for message in messages %}
+						<h3> {{ message }}</h3>
+						{% endfor %}
+					</div>
 					<div class="flex-sb-m w-full p-t-3 p-b-32">
 						<div class="contact100-form-checkbox">
 							<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">

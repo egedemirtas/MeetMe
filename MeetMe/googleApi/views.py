@@ -4,7 +4,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from django.contrib import messages
 from eventCalendar.models import Events
 
-
 def gCalendar(request):
     flow = InstalledAppFlow.from_client_secrets_file(
     'googleApi/client_secrets.json',
