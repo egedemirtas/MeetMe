@@ -75,7 +75,7 @@ def login(request):
          if user is not None:
              auth.login(request,user)
              print('User login')
-             return redirect('/')
+             return redirect('/eventCalendar/calendar')
          else:
              messages.info(request,'Invalid login please check your username and password')
              return redirect('login')
