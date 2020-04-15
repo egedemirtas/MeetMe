@@ -8,11 +8,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
-    <form action="removeCalendar"method="POST">
+    <form action="createMeeting" method="POST">
         {% csrf_token %}
-        <input type="text" name="removeCalendar">
+        <input type="text" name="meetingName"><br>
+        <input type="text" name="partUsername"><br>
+        <input type="text" name="boundBegin"><br>
+        <input type="text" name="boundEnd"><br>
+        <input type="text" name="meetingDuration"><br>
+        <input type="text" name="meetingDescription"><br>
+        <input type="text" name="meetingLoc"><br>
         <button>
-            Register
+            Create Meeting
         </button>
     </form>
     <script>
