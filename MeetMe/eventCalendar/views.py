@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from eventCalendar.models import Events
+from eventCalendar.models import Events, Meetings, MeetingParticipation, Meetings_Computed
+from datetime import datetime
 
 # Create your views here.
 def calendar(request):
@@ -43,4 +44,31 @@ def remove(request):
     return JsonResponse(data)
 
 def createMeeting(request):
+    #create a meeting
+    meetingName = request.POST['meetingName']
+    creatorID = request.user
+    #beginLimit = request.POST["beginLimit"]
+    #endLimit = request.POST["endLimit"]
+    beginLimit = datetime(2019, 10, 9, 23, 55, 59, 342380)
+    endLimit = datetime(2019, 10, 9, 23, 55, 59, 342380)
+    meetingDuration = request.POST["meetingDuration"]
+    meeting = Meetings.objects.create(meetingName = meetingName, creatorID = creatorID, beginLimit = beginLimit, endLimit = endLimit, meetingDuration = meetingDuration)
+
+    #save the same meeting for attendance
+    meetingID = meeting
+    partUsername = request.POST["partUsername"]
+    myList = partUsername.split(',')
+    attendance = False
+    for i in myList:
+        meetingPart = MeetingParticipation.objects.create(meetingID = meetingID, partUsername = i, attendance = attendance)
+
+    #save for computed meeting times
+    meetingIsActive = False
+    computedStart = datetime(2019, 10, 9, 23, 55, 59, 342380)
+    computedEnd = datetime(2019, 10, 9, 23, 55, 59, 342380)
+    compMeeting = Meetings_Computed.objects.create(meetingID = meetingID, meetingIsActive = meetingIsActive, computedStart = computedStart, computedEnd = computedEnd)
     return render(request,'eventCalendar/calendar1.html')
+
+#this will compute the available time frames of an invitation
+def computeMeeting(self, parameter_list):
+    pass
