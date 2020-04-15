@@ -19,7 +19,8 @@ def gCalendar(request):
     #print(type(events))
     #events=str(events)
     #messages.info(request,events) 
-    # #summary  title  
+    # #summary  title
+    userID = request.user.id  #id for auth user
     for item in events['items']: 
         title=item['summary']
         start=item['start'].get('dateTime','NA')
@@ -30,8 +31,8 @@ def gCalendar(request):
             end=item['end']['date']
         #print(end.keys())
         print('{}, {}, {}'.format(title,start,end))
-        event = Events(name=str(title), start=start, end=end)
-        if not(Events.objects.filter(name=title,start=start,end=end).exists()): ##if it is not in db
+        event = Events(name=str(title), start=start, end=end, userID_id=userID)
+        if not(Events.objects.filter(name=title,start=start,end=end, userID_id=userID).exists()): ##if it is not in db
             event.save()
 
 
