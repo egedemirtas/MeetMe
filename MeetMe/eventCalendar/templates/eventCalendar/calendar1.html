@@ -10,13 +10,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
     <form action="createMeeting" method="POST">
         {% csrf_token %}
-        <input type="text" name="meetingName"><br>
-        <input type="text" name="partUsername"><br>
-        <input type="text" name="boundBegin"><br>
-        <input type="text" name="boundEnd"><br>
-        <input type="text" name="meetingDuration"><br>
-        <input type="text" name="meetingDescription"><br>
-        <input type="text" name="meetingLoc"><br>
+        <input type="text" name="meetingName" placeholder="meetingName"><br>
+        <input type="text" name="partUsername" placeholder="partUsername"><br>
+        <input type="text" name="beginLimit" placeholder="beginLimit"><br>
+        <input type="text" name="endLimit" placeholder="endLimit"><br>
+        <input type="text" name="meetingDuration" placeholder="meetingDuration"><br>
+        <input type="text" name="meetingDescription" placeholder="meetingDescription"><br>
+        <input type="text" name="meetingLoc" placeholder="meetingLoc"><br>
         <button>
             Create Meeting
         </button>

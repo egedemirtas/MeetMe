@@ -42,13 +42,5 @@ def remove(request):
     data = {}
     return JsonResponse(data)
 
-
-"""
-def removeCalendar(request):
-    if request.method=='POST':
-        print("deleted")
-        instance = Calendar.objects.get(userID = 5)
-        instance.delete()
-        print("deleted")
+def createMeeting(request):
     return render(request,'eventCalendar/calendar1.html')
-"""
