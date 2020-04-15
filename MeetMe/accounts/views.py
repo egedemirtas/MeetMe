@@ -1,43 +1,45 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
-#from django.contrib.auth import login
+from django.contrib.auth import authenticate
 from django.contrib import messages
 from .forms import UserRegisterForm
 from django.forms import inlineformset_factory
+from django.core.mail import send_mail
+from MeetMe.settings import EMAIL_HOST_USER
+
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_text, force_bytes
+from .tokens import account_activation_token
 
 def register(request):
     if request.method == 'POST':
-        #first_name = request.POST['first_name']
-        #last_name = request.POST['last_name']
-        username = request.POST['username']
-        password = request.POST['password']
-        confirm_password = request.POST['confirm_password']
-        email = request.POST['mail']
-
-        if password==confirm_password:
-            if User.objects.filter(username=username).exists():
-                messages.info(request, 'Username Already Taken')
-                return redirect('register')
-            elif User.objects.filter(email=email).exists():
-                messages.info(request, 'Email Already Taken')
-                return redirect('register')
-            else:
-                user = User.objects.create_user(username=username, password=password, email=email, first_name="", last_name="")
-                user.save()
-                messages.success(request, f'Account Created for {username}')
-        else:
-            messages.info(request, 'Passwords does not match')
-            return redirect('register')
-    #else:
-    return render(request, 'accounts/register.html', {})
-
-    """
-    if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            user.refresh_from_db()
+            email = form.cleaned_data.get('email')
+            form.is_active = False
+            user.save()
+            current_site = get_current_site(request)
+            """
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Account Created for {username}')
+            password1 = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password1)
+            auth.login(request, user)
+            """
+            subject = 'Please Activate Your Account'
+            message = render_to_string('accounts/activation_request.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                # method will generate a hash value with user related data
+                'token': account_activation_token.make_token(user),
+            })
+            user.email_user(subject, message)
+            #messages.success(request, f'Account Created for {username}')
             return redirect('register')
         try:
             form.password1.validate
@@ -46,7 +48,24 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'accounts/register.html', {'form':form})
-"""
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    # checking if the user exists, if the token is valid.
+    if user is not None and account_activation_token.check_token(user, token):
+        # if valid set active true 
+        user.is_active = True
+        # set signup_confirmation true
+        user.profile.signup_confirmation = True
+        user.save()
+        auth.login(request, user)
+        return redirect('home')
+    else:
+        return render(request, 'activation_invalid.html')
 
 def login(request):
      if request.method=='POST':
@@ -56,7 +75,7 @@ def login(request):
          if user is not None:
              auth.login(request,user)
              print('User login')
-             return redirect('/')
+             return redirect('/eventCalendar/calendar')
          else:
              messages.info(request,'Invalid login please check your username and password')
              return redirect('login')
