@@ -11,7 +11,8 @@ def calendar(request):
     context = {
         "events":all_events,
     }
-    return render(request,'eventCalendar/calendar1.html',context)
+    #return render(request,'eventCalendar/calendar1.html',context)
+    return render(request,'eventCalendar/calendar.html',context)
 
 def add_event(request):
     start = request.GET.get("start", None)
