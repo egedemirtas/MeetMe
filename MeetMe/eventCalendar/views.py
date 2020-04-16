@@ -38,11 +38,11 @@ def add_event(request):
     title = request.GET.get("title", None)
 
     start_unaware = datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
-    start_aware = pytz.timezone('UTC').localize(start_unaware, is_dst=None)
+    start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
     #start_utc = start_aware.astimezone(pytz.utc)
 
     end_unaware = datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
-    end_aware = pytz.timezone('UTC').localize(end_unaware, is_dst=None)
+    end_aware = pytz.timezone('Europe/Istanbul').localize(end_unaware, is_dst=None)
     #end_utc = end_aware.astimezone(pytz.utc)
 
     userID = request.user
