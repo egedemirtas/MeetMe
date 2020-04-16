@@ -14,6 +14,15 @@ def calendar(request):
     #return render(request,'eventCalendar/calendar1.html',context)
     return render(request,'eventCalendar/calendar.html',context)
 
+def profile(request):
+    user = request.user
+    #all_events = Events.objects.all()
+
+    context = {
+    }
+    #return render(request,'eventCalendar/calendar1.html',context)
+    return render(request,'eventCalendar/profile.html',context)
+
 def add_event(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
