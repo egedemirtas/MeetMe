@@ -12,7 +12,7 @@ def calendar(request):
         "events":all_events,
     }
     #return render(request,'eventCalendar/calendar1.html',context)
-    return render(request,'eventCalendar/calendar1.html',context)
+    return render(request,'eventCalendar/calendar.html',context)
 
 def profile(request):
     user = request.user
