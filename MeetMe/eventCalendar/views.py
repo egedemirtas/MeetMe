@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from eventCalendar.models import Events, Meetings, MeetingParticipation, Meetings_Computed
 from datetime import datetime
-
+import pytz
 # Create your views here.
 def calendar(request):
     user = request.user
@@ -12,7 +12,7 @@ def calendar(request):
         "events":all_events,
     }
     #return render(request,'eventCalendar/calendar1.html',context)
-    return render(request,'eventCalendar/calendar.html',context)
+    return render(request,'eventCalendar/calendar1.html',context)
 
 def profile(request):
     user = request.user
@@ -38,26 +38,33 @@ def add_event(request):
     title = request.GET.get("title", None)
 
     start_unaware = datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
-    start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
+    start_aware = pytz.timezone('UTC').localize(start_unaware, is_dst=None)
     #start_utc = start_aware.astimezone(pytz.utc)
 
     end_unaware = datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
-    end_aware = pytz.timezone('Europe/Istanbul').localize(end_unaware, is_dst=None)
+    end_aware = pytz.timezone('UTC').localize(end_unaware, is_dst=None)
     #end_utc = end_aware.astimezone(pytz.utc)
 
     userID = request.user
     event = Events(name=str(title), start=start_aware, end=end_aware, userID=userID)
     event.save()
 
+    #for debug
     user = request.user
     userEvents = Events.objects.filter(userID = user)
     for event in userEvents:
         print(event.start)
+        """
         strippedEvent = str(event.start).split('+')[0]
         start_unaware = datetime.strptime(strippedEvent,"%Y-%m-%d %H:%M:%S")
         start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
-        print("retrieved from db:", start_aware)
-
+        """
+        #this is the timezone to be converted
+        tz = pytz.timezone('Europe/Istanbul')
+        #convert event.start to tz timezone, event.start was utc before!!!
+        start_Ist = event.start.astimezone(tz)
+        print("retrieved from db:", start_Ist)
+    
     data = {}
     return JsonResponse(data)
 
@@ -105,7 +112,7 @@ def createMeeting(request):
     computedStart = datetime(2019, 10, 9, 23, 55, 59, 342380)
     computedEnd = datetime(2019, 10, 9, 23, 55, 59, 342380)
     compMeeting = Meetings_Computed.objects.create(meetingID = meetingID, meetingIsActive = meetingIsActive, computedStart = computedStart, computedEnd = computedEnd)
-    return render(request,'eventCalendar/calendar1.html')
+    return render(request,'eventCalendar/calendar.html')
 
 #this will compute the available time frames of an invitation
 def computeMeeting(self, parameter_list):
