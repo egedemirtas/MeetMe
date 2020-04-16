@@ -23,13 +23,41 @@ def profile(request):
     #return render(request,'eventCalendar/calendar1.html',context)
     return render(request,'eventCalendar/profile.html',context)
 
+def addMeeting(request):
+    user = request.user
+    #all_events = Events.objects.all()
+
+    context = {
+    }
+    #return render(request,'eventCalendar/calendar1.html',context)
+    return render(request,'eventCalendar/addMeeting.html',context)
+
 def add_event(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
+
+    start_unaware = datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
+    start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
+    #start_utc = start_aware.astimezone(pytz.utc)
+
+    end_unaware = datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
+    end_aware = pytz.timezone('Europe/Istanbul').localize(end_unaware, is_dst=None)
+    #end_utc = end_aware.astimezone(pytz.utc)
+
     userID = request.user
-    event = Events(name=str(title), start=start, end=end, userID=userID)
+    event = Events(name=str(title), start=start_aware, end=end_aware, userID=userID)
     event.save()
+
+    user = request.user
+    userEvents = Events.objects.filter(userID = user)
+    for event in userEvents:
+        print(event.start)
+        strippedEvent = str(event.start).split('+')[0]
+        start_unaware = datetime.strptime(strippedEvent,"%Y-%m-%d %H:%M:%S")
+        start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
+        print("retrieved from db:", start_aware)
+
     data = {}
     return JsonResponse(data)
 
