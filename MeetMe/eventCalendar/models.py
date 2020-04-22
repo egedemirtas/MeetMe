@@ -18,8 +18,8 @@ class Meetings(models.Model):
     meetingID = models.AutoField(primary_key=True)
     meetingName = models.CharField(max_length=255, null=True, blank=True)
     creatorID = models.ForeignKey(User, null=True, on_delete = models.CASCADE)
-    beginLimit = models.DateTimeField(null=True)
-    endLimit = models.DateTimeField(null=True)
+    beginLimit = models.TimeField(null=True)
+    endLimit = models.TimeField(null=True)
     meetingDuration = models.CharField(max_length=255, null=True, blank=True)
 #this is to record the users and the participation of a recorded meeting
 class MeetingParticipation(models.Model):
