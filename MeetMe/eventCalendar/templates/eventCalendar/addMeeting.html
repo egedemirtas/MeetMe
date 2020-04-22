@@ -109,22 +109,15 @@
                       <div class="form-group">
 
                           <div class="col-xs-6">
-                              <label for="first_name"><h4>Meeting or Event Name</h4></label>
+                              <label for="first_name"><h4>Meeting Name</h4></label>
                               <input type="text" class="form-control" name="Meeting or Event Name" id="Meeting or Event Name" placeholder="Meeting or Event Name" title="enter your first name if any.">
                           </div>
                       </div>
 
                       <div class="form-group">
                           <div class="col-xs-6">
-                             <label for="datetime"><h4>Date and preferable Time Zone</h4></label>
-                              <input type="date" class="form-control" name="Date" id="Date" placeholder="Date" title="Date">
-                          </div>
-                      </div>
-
-                      <div class="form-group">
-                          <div class="col-xs-6">
-                             <label for="duration"><h4>Duration</h4></label>
-                              <input type="text" class="form-control" name="duration" id="duration" placeholder="duration" title="duration">
+                             <label for="datetime"><h4>Start Time</h4></label>
+                              <input type="datetime-local" class="form-control" name="startdate" id="startdate" title="start Date">
                           </div>
                       </div>
 
@@ -132,27 +125,40 @@
                       <div class="form-group">
 
                           <div class="col-xs-6">
-                              <label for="location"><h4>Meeting Location or Adress</h4></label>
+                              <label for="location"><h4>Meeting Location</h4></label>
                               <input type="location" class="form-control" id="location" placeholder="somewhere" title="enter a location">
                           </div>
+                          
                       </div>
 
 
                       <div class="form-group">
-
-                          <div class="col-xs-6">
-                              <label for="location"><h4>Description</h4></label>
-                              <input type="text" class="form-control" id="description" placeholder="Description" title="Description of event">
-                          </div>
+                        <div class="col-xs-6">
+                           <label for="duration"><h4>End Time</h4></label>
+                            <input type="datetime-local" class="form-control" name="endtime" id="endtime"  title="endtime">
+                        </div>
+                        <div class="col-xs-6">
+                          <label for="location"><h4>Description</h4></label>
+                          <input type="text" class="form-control" id="description" placeholder="Description" title="Description of event">
                       </div>
+                    </div>
 
                       <div class="form-group">
 
                           <div class="col-xs-6">
-                              <label for="invitiation"><h4>Invitations</h4></label>
-                              <input type="" class="form-control" id="participants" placeholder="participants" title="Friends or participants">
+                              <label for="location"><h4>Duration (minutes)</h4></label>
+                              <input type="number" class="form-control" id="duration" placeholder="60 mins" title="Duration of event">
                           </div>
+                          <div class="col-xs-12">
+                            <label for="invitiation"><h4>Invitations</h4></label>
+                            <input type="" class="form-control" id="participants" placeholder="participants" title="Friends or participants">
+                        </div>
                       </div>
+
+                      <div class="form-group">
+
+                      </div>
+                      
 
 
                       <div class="form-group">
