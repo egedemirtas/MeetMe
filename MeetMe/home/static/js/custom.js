@@ -1,6 +1,13 @@
 // preloader
 $(window).load(function(){
-    $('.preloader').fadeOut(1000); // set duration in brackets    
+    $('#login-anchor').click(function() {
+        window.location.href = '/accounts/login/';
+    });
+    $('#register-anchor').click(function() {
+        window.location.href = '/accounts/register/';
+    });
+
+    $('.preloader').fadeOut(1000); // set duration in brackets
 });
 
 $(function() {
