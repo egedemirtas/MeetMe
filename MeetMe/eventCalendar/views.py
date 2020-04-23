@@ -1,5 +1,16 @@
+from threading import Timer
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.contrib.auth.models import User
+#from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_text, force_bytes
+from django.core.mail import send_mail
+from MeetMe.settings import EMAIL_HOST_USER
+from django.template.loader import render_to_string
+
 from eventCalendar.models import Events, Meetings, MeetingParticipation, Meetings_Computed
 from datetime import datetime
 import pytz
@@ -12,7 +23,7 @@ def calendar(request):
         "events":all_events,
     }
     #return render(request,'eventCalendar/calendar1.html',context)
-    return render(request,'eventCalendar/calendar.html',context)
+    return render(request,'eventCalendar/calendar1.html',context)  ##testing
 
 def profile(request):
     user = request.user
@@ -20,8 +31,8 @@ def profile(request):
 
     context = {
     }
-    #return render(request,'eventCalendar/calendar1.html',context)
-    return render(request,'eventCalendar/profile.html',context)
+    return render(request,'eventCalendar/calendar1.html',context)
+    #return render(request,'eventCalendar/profile.html',context)      ##testing
 
 def addMeeting(request):
     user = request.user
@@ -29,8 +40,8 @@ def addMeeting(request):
 
     context = {
     }
-    #return render(request,'eventCalendar/calendar1.html',context)
-    return render(request,'eventCalendar/addMeeting.html',context)
+    return render(request,'eventCalendar/calendar1.html',context)  ##testing
+    #return render(request,'eventCalendar/addMeeting.html',context)
 
 def add_event(request):
     start = request.GET.get("start", None)
@@ -108,12 +119,42 @@ def createMeeting(request):
         meetingPart = MeetingParticipation.objects.create(meetingID = meetingID, partUsername = i, attendance = attendance)
 
     #save for computed meeting times
-    meetingIsActive = False
+    """meetingIsActive = False
     computedStart = datetime(2019, 10, 9, 23, 55, 59, 342380)
     computedEnd = datetime(2019, 10, 9, 23, 55, 59, 342380)
-    compMeeting = Meetings_Computed.objects.create(meetingID = meetingID, meetingIsActive = meetingIsActive, computedStart = computedStart, computedEnd = computedEnd)
+    compMeeting = Meetings_Computed.objects.create(meetingID = meetingID, meetingIsActive = meetingIsActive, computedStart = computedStart, computedEnd = computedEnd)"""
+
+    for part in myList:
+        user = User.objects.get(username = part)
+        print(user.username) ##
+        invitation(request,user,creatorID)   
+    ##start the timer
+    #timer = Timer(120.0, computeMeeting(meeting.meetingID))
+    args=[]
+    args.append(meeting.meetingID)
+    timer = Timer(120.0, computeMeeting,args)
+    timer.start()
+    ## check if all users have accepted 
+        
     return render(request,'eventCalendar/calendar.html')
 
+def invitation(request,user,creator):
+    #token = default_token_generator.make_token(user)
+    current_site = get_current_site(request)
+    subject = 'Please Click the link if you want to accept event invitation by '+ str(creator.username)
+    message = render_to_string('eventCalendar/acceptInvitation.html', {
+                'user': user,
+                'domain': current_site.domain,
+                #'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                #'token': account_activation_token.make_token(user),
+            })
+    user.email_user(subject, message)   
+## if invitation accepted alter db accordingly
+def acceptInvite(request):
+    user=request.user
+    meetingPart=MeetingParticipation.objects.get(partUsername = user.username)
+    meetingPart.attendance=True
+    meetingPart.save()
 #this will compute the available time frames of an invitation
-def computeMeeting(self, parameter_list):
-    pass
+def computeMeeting(meetingID):
+    print("Meeting computed! for id: "+str(meetingID))
