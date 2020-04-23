@@ -12,8 +12,9 @@ from MeetMe.settings import EMAIL_HOST_USER
 from django.template.loader import render_to_string
 
 from eventCalendar.models import Events, Meetings, MeetingParticipation, Meetings_Computed
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
+from operator import itemgetter
 # Create your views here.
 def calendar(request):
     user = request.user
@@ -103,10 +104,10 @@ def createMeeting(request):
     #create a meeting
     meetingName = request.POST['meetingName']
     creatorID = request.user
-    #beginLimit = request.POST["beginLimit"]
-    #endLimit = request.POST["endLimit"]
-    beginLimit = datetime(2019, 10, 9, 23, 55, 59, 342380)
-    endLimit = datetime(2019, 10, 9, 23, 55, 59, 342380)
+    beginLimit = request.POST["beginLimit"]
+    endLimit = request.POST["endLimit"]
+    print(beginLimit)
+    print(endLimit)
     meetingDuration = request.POST["meetingDuration"]
     meeting = Meetings.objects.create(meetingName = meetingName, creatorID = creatorID, beginLimit = beginLimit, endLimit = endLimit, meetingDuration = meetingDuration)
 
@@ -132,7 +133,7 @@ def createMeeting(request):
     #timer = Timer(120.0, computeMeeting(meeting.meetingID))
     args=[]
     args.append(meeting.meetingID)
-    timer = Timer(120.0, computeMeeting,args)
+    timer = Timer(90.0, computeMeeting,args)
     timer.start()
     ## check if all users have accepted 
         
@@ -156,5 +157,105 @@ def acceptInvite(request):
     meetingPart.attendance=True
     meetingPart.save()
 #this will compute the available time frames of an invitation
-def computeMeeting(meetingID):
-    print("Meeting computed! for id: "+str(meetingID))
+def computeMeeting(currentID):
+    print(currentID,"------------------------------")
+
+    #get participants in a list
+    participants = MeetingParticipation.objects.filter(meetingID=currentID, attendance=True).values_list('partUsername',flat=True)
+    print("these are participants",participants)
+    #get paticipants' id in alists
+    idList = []
+    for i in participants:
+        current = User.objects.filter(username = i).values_list('id',flat=True)
+        idList.append(current[0])
+    print("this is id list", idList)
+
+    #this is the current meeting: begin&end bounds, creatorID, duration
+    requestedInfo = Meetings.objects.filter(meetingID=currentID)
+    print("this is requestedINfo",requestedInfo)
+
+    #this is the duration of the meeting
+    now = datetime.now()
+    duration = requestedInfo[0].meetingDuration
+    duration = int(duration)
+    print("this is duration in int: ",duration) #this will be used if we want to add 30min to a datetime object
+    now1 = now + timedelta(minutes = duration)
+    durTime = now1 - now #this will be used if we want to compare 2 hours
+    print("this is duration in time:",durTime)
+
+    #this is the begin and end bounds of the meeting
+    tz = pytz.timezone('Europe/Istanbul')
+    beginBound = requestedInfo[0].beginLimit
+    beginBound = beginBound.astimezone(tz)
+    endBound = requestedInfo[0].endLimit
+    endBound = endBound.astimezone(tz)
+    print("beginbound is:", beginBound)
+    print("endbound is:", endBound)
+
+    #this will be used to store events for each participant
+    eventList = []
+    #from the idList list, get their each participants' events (their start datetime should be ordered)
+    #first add the creator's id in list
+    idList.append(requestedInfo[0].creatorID.id)
+    print("This is id of everyone:",idList)
+    for i in idList:
+        arr = Events.objects.filter(userID = i).order_by('start')
+        eventList.append(arr)
+    print(eventList)
+
+    allEvents = []
+    for i in eventList:
+        print("User's events:")
+        for j in i:#in a <QueryList>
+            start_tz = j.start.astimezone(tz)
+            end_tz = j.end.astimezone(tz)
+            print(start_tz, "------",end_tz)
+            anEvent = [start_tz, end_tz]
+            allEvents.append(anEvent)
+
+    print("----------------------------------------------")
+    allEvents.sort(key=itemgetter(0))#now all the evnts from all the users are sorted by starting times
+    for i in allEvents:
+        print("An Event:")
+        for j in i:
+            print(j)
+
+    h = 0
+    while h < len(allEvents)-1:
+        end1 = allEvents[h][1]
+        start2 = allEvents[h+1][0]
+        if end1 > start2:
+            end2 = allEvents[h+1][1]
+            if end2 < end1:
+                allEvents.pop(h+1)
+                h-=1
+            else:
+                allEvents[h][1] = end2
+        h+=1
+    
+    print("----------------------------------------------")
+    for i in allEvents:
+        print("An Event:")
+        for j in i:
+            print(j)
+    
+    solutions = []
+    print("----------------------------------------------")
+    for i in range(len(allEvents)-1):
+        end1 = allEvents[i][1]
+        start2 = allEvents[i+1][0]
+        if start2 > end1 and end1 >= beginBound and start2 < endBound:
+            solutions.append([end1, start2])
+
+    for i in solutions:
+        for j in i:
+            print(j)
+
+    meetingName = Meetings.objects.filter(meetingID=currentID).values_list('meetingName',flat=True)
+    print("this is meeting name",meetingName[0])
+    print("this is solution start-end",solutions[0][0], solutions[0][1])
+    
+    for i in idList:
+        part = User.objects.get(id =i)
+        event = Events.objects.create(name = meetingName[0], start=solutions[0][0], end=solutions[0][1], userID=part)
+    
