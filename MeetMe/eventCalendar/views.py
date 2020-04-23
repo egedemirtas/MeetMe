@@ -23,7 +23,7 @@ def calendar(request):
         "events":all_events,
     }
     #return render(request,'eventCalendar/calendar1.html',context)
-    return render(request,'eventCalendar/calendar1.html',context)  ##testing
+    return render(request,'eventCalendar/calendar.html',context)  ##testing
 
 def profile(request):
     user = request.user
@@ -31,8 +31,8 @@ def profile(request):
 
     context = {
     }
-    return render(request,'eventCalendar/calendar1.html',context)
-    #return render(request,'eventCalendar/profile.html',context)      ##testing
+    #return render(request,'eventCalendar/calendar1.html',context)
+    return render(request,'eventCalendar/profile.html',context)      ##testing
 
 def addMeeting(request):
     user = request.user
@@ -40,8 +40,8 @@ def addMeeting(request):
 
     context = {
     }
-    return render(request,'eventCalendar/calendar1.html',context)  ##testing
-    #return render(request,'eventCalendar/addMeeting.html',context)
+    #return render(request,'eventCalendar/calendar1.html',context)  ##testing
+    return render(request,'eventCalendar/addMeeting.html',context)
 
 def add_event(request):
     start = request.GET.get("start", None)
