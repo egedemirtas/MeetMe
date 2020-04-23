@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from django.contrib import messages
 from eventCalendar.models import Events
+from django.urls import reverse
 
 def gCalendar(request):
     flow = InstalledAppFlow.from_client_secrets_file(
@@ -36,4 +37,4 @@ def gCalendar(request):
             event.save()
 
 
-    return render(request,'googleApi/a.html')
+    return redirect('calendar')
