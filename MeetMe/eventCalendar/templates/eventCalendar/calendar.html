@@ -327,71 +327,6 @@
 </body>
 </main>
 <sidebar>
-<<<<<<< HEAD
-	<div class="logo">Meet Me</div>
-	<div class="avatar">
-		<div class="avatar__img">
-			<img src="https://picsum.photos/70" alt="avatar">
-		</div>
-		<div class="avatar__name">{{user.username}}</div>
-	</div>
-	<nav class="menu">
-		<a class="menu__item" href="">
-			<button class="btn btn-primary">Load Calender from Google</button>
-		</a>
-		<a class="menu__item" href="{% url 'profile' %}">
-			<i class="menu__icon fa fa-home"></i>
-			<span class="menu__text">Profile</span>
-		</a>
-		<a class="menu__item" href="{% url 'addmeeting' %}">
-			<i class="menu__icon fa fa-envelope"></i>
-			<span class="menu__text">Add Meeting</span>
-		</a>
-		<a class="menu__item menu__item--active" href="#">
-			<i class="menu__icon fa fa-calendar"></i>
-			<span class="menu__text">calendar</span>
-		</a>
-		<a class="menu__item" href="#">
-			<i class="menu__icon fa fa-bar-chart"></i>
-			<span class="menu__text">Friends</span>
-		</a>
-		<a class="menu__item" href="{% url 'logout' %}">
-			<i class="menu__icon fa fa-sliders"></i>
-			<span class="menu__item">
-				Logout
-			</span>
-		</a>
-	</nav>
-
-	<div class="form-popup" id="myForm">
-		<form class="form-container">
-			<h3>Create Event</h3>
-
-			<label for="title"><b>Title</b></label>
-			<input type="text" placeholder="Enter Title" name="title" required>
-
-			<label for="end_date"><b>End Date</b></label>
-			<input type="datetime-local" placeholder="End Date" name="end_date" required>
-
-			<label for="start_date"><b>Start Date</b></label>
-			<input type="datetime-local" placeholder="Start Date" name="start_date" required>
-
-			<b><span style="margin-top: 12px; display: inline-block;">Select a color</span></b>
-			<div style="display:flex;justify-content: space-around;">
-				<label for="red"><b>Red</b></label>
-				<input type="radio" name="color" value="red" id="red" selected>
-				<label for="blue"><b>Blue</b></label>
-				<input type="radio" name="color" value="blue" id="blue">
-				<label for="green"><b>Green</b></label>
-				<input type="radio" name="color" id="green" value="green">
-			</div>
-
-			<button type="button" class="btn" id="create-event">Create</button>
-			<button type="button" class="btn cancel" id="popup-close">Close</button>
-		</form>
-	</div>
-	<div class="copyright">copyright &copy; 2018</div>
-=======
   <div class="logo">Meet Me</div>
   <div class="avatar">
     <div class="avatar__img">
@@ -427,7 +362,6 @@
     </a>
   </nav>
   <div class="copyright">copyright &copy; 2018</div>
->>>>>>> 23eba831a9aebd7eb729dc8cfac85f5ba4f59332
 </sidebar>
 
 
