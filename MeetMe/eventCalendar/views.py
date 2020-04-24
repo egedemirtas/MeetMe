@@ -52,7 +52,15 @@ def addEvent(request):
     }
     return render(request,'eventCalendar/addEvent.html',context)  ##testing
     #return render(request,'eventCalendar/addMeeting.html',context)
+    
+def myMeetings(request):
+    user = request.user
+    #all_events = Events.objects.all()
 
+    context = {
+    }
+    return render(request,'eventCalendar/myMeetings.html',context)  ##testing
+    #return render(request,'eventCalendar/addMeeting.html',context)
 
 def add_event(request):
     """
