@@ -112,26 +112,27 @@
           <div class="tab-content">
             <div class="tab-pane active" id="home">
                 <hr>
-                  <form class="form" action="##" method="post" id="registrationForm">
+                  <form class="form" action="add_event" method="post" id="registrationForm">
+                    {% csrf_token %}
                       <div class="form-group">
-
+                        {% csrf_token %}
                           <div class="col-xs-6">
                               <label for="first_name"><h4>Event Name</h4></label>
-                              <input type="text" class="form-control" name="Event Name" id="Event Name" placeholder="Event Name" title="enter your first name if any.">
+                              <input type="text" class="form-control" name="title" id="Event Name" placeholder="Event Name" title="enter your first name if any.">
                           </div>
                       </div>
 
                       <div class="form-group">
                           <div class="col-xs-6">
                              <label for="datetime"><h4>Start Time</h4></label>
-                              <input type="datetime-local" class="form-control" name="startdate" id="startdate" title="start Date">
+                              <input type="datetime-local" class="form-control" name="start" id="startdate" title="start Date">
                           </div>
                       </div>
 
                       <div class="form-group">
                         <div class="col-xs-6">
                            <label for="duration"><h4>End Time</h4></label>
-                            <input type="datetime-local" class="form-control" name="endtime" id="endtime"  title="endtime">
+                            <input type="datetime-local" class="form-control" name="end" id="endtime"  title="endtime">
 
 
                       <div class="form-group">

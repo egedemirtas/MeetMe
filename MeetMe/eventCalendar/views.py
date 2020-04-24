@@ -1,5 +1,5 @@
 from threading import Timer
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 #from django.contrib.auth.tokens import default_token_generator
@@ -55,6 +55,7 @@ def addEvent(request):
 
 
 def add_event(request):
+    """
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
@@ -66,11 +67,20 @@ def add_event(request):
     end_unaware = datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
     end_aware = pytz.timezone('Europe/Istanbul').localize(end_unaware, is_dst=None)
     #end_utc = end_aware.astimezone(pytz.utc)
+    """
 
-    userID = request.user
-    event = Events(name=str(title), start=start_aware, end=end_aware, userID=userID)
-    event.save()
+    #delete these if you want to use above part
+    if request.method == 'POST':
+        start=request.POST['start']
+        end=request.POST['end']
+        title = request.POST['title']
+        print(start)
 
+        userID = request.user
+        #event = Events(name=str(title), start=start_aware, end=end_aware, userID=userID)
+        event = Events(name=str(title), start=start, end=end, userID=userID)
+        event.save()
+        return redirect('addEvent')
     #for debug
     user = request.user
     userEvents = Events.objects.filter(userID = user)
@@ -86,9 +96,11 @@ def add_event(request):
         #convert event.start to tz timezone, event.start was utc before!!!
         start_Ist = event.start.astimezone(tz)
         print("retrieved from db:", start_Ist)
-
+    """
     data = {}
     return JsonResponse(data)
+    """
+    render(request, 'eventCalendar/addEvent.html')
 
 def update(request):
     start = request.GET.get("start", None)
