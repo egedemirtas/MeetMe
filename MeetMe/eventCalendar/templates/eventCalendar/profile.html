@@ -74,7 +74,11 @@
         box-shadow: 0 1px 2px #C3C3C3;
 		}
     .menu__item {
+      color:#A8B2B9;
       font-size: 11.2px;
+    }
+    .avatar__name {
+      font-size: 12.8px;
     }
 
 </style>
@@ -326,9 +330,13 @@
       <i class="menu__icon fa fa-calendar"></i>
       <span class="menu__text">calendar</span>
     </a>
+    <a class="menu__item" href="{% url 'addEvent' %}">
+      <i class="menu__icon fa fa-envelope"></i>
+      <span class="menu__text">Add Event</span>
+    </a>
     <a class="menu__item" href="#">
       <i class="menu__icon fa fa-bar-chart"></i>
-      <span class="menu__text">Friends</span>
+      <span class="menu__text">My Meetings</span>
     </a>
     <a class="menu__item" href="{% url 'logout' %}">
       <i class="menu__icon fa fa-sliders"></i>

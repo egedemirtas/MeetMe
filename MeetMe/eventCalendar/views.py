@@ -44,6 +44,16 @@ def addMeeting(request):
     #return render(request,'eventCalendar/calendar1.html',context)  ##testing
     return render(request,'eventCalendar/addMeeting.html',context)
 
+def addEvent(request):
+    user = request.user
+    #all_events = Events.objects.all()
+
+    context = {
+    }
+    return render(request,'eventCalendar/addEvent.html',context)  ##testing
+    #return render(request,'eventCalendar/addMeeting.html',context)
+
+
 def add_event(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
@@ -76,7 +86,7 @@ def add_event(request):
         #convert event.start to tz timezone, event.start was utc before!!!
         start_Ist = event.start.astimezone(tz)
         print("retrieved from db:", start_Ist)
-    
+
     data = {}
     return JsonResponse(data)
 
@@ -128,15 +138,15 @@ def createMeeting(request):
     for part in myList:
         user = User.objects.get(username = part)
         print(user.username) ##
-        invitation(request,user,creatorID)   
+        invitation(request,user,creatorID)
     ##start the timer
     #timer = Timer(120.0, computeMeeting(meeting.meetingID))
     args=[]
     args.append(meeting.meetingID)
     timer = Timer(90.0, computeMeeting,args)
     timer.start()
-    ## check if all users have accepted 
-        
+    ## check if all users have accepted
+
     return render(request,'eventCalendar/calendar.html')
 
 def invitation(request,user,creator):
@@ -149,7 +159,7 @@ def invitation(request,user,creator):
                 #'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 #'token': account_activation_token.make_token(user),
             })
-    user.email_user(subject, message)   
+    user.email_user(subject, message)
 ## if invitation accepted alter db accordingly
 def acceptInvite(request):
     user=request.user
@@ -232,13 +242,13 @@ def computeMeeting(currentID):
             else:
                 allEvents[h][1] = end2
         h+=1
-    
+
     print("----------------------------------------------")
     for i in allEvents:
         print("An Event:")
         for j in i:
             print(j)
-    
+
     solutions = []
     print("----------------------------------------------")
     for i in range(len(allEvents)-1):
@@ -254,8 +264,7 @@ def computeMeeting(currentID):
     meetingName = Meetings.objects.filter(meetingID=currentID).values_list('meetingName',flat=True)
     print("this is meeting name",meetingName[0])
     print("this is solution start-end",solutions[0][0], solutions[0][1])
-    
+
     for i in idList:
         part = User.objects.get(id =i)
         event = Events.objects.create(name = meetingName[0], start=solutions[0][0], end=solutions[0][1], userID=part)
-    

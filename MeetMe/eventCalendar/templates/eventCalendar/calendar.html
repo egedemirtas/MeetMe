@@ -38,8 +38,6 @@
 				// it doesn't need to have a start or end
 				var eventObject = {
 					title: $.trim($(this).text()) // use the element's text as the event title
-
-
 				};
 
 				// store the Event Object in the DOM element so we can get to it later
@@ -137,11 +135,11 @@
 				// 	// }
 
 				// });
-				if (title && end) {
+				if (title) {
 					$.ajax({
 						type: "GET",
 						url: 'add_event',
-						data: { 'title': title, 'start': start, 'end': start },
+						data: { 'title': title, 'start': null, 'end' : null },
 						dataType: "json",
 						success: function (data) {
 							calendar.fullCalendar('refetchEvents');
@@ -189,7 +187,6 @@
 		<main>
 			<style>
 				body {
-					
 					text-align: center;
 					font-size: 14px;
 					font-family: "Helvetica Nueue", Arial, Verdana, sans-serif;
@@ -349,11 +346,15 @@
 		</a>
 		<a class="menu__item menu__item--active" href="#">
 			<i class="menu__icon fa fa-calendar"></i>
-			<span class="menu__text">calendar</span>
+			<span class="menu__text">Calendar</span>
+		</a>
+		<a class="menu__item" href="{% url 'addEvent' %}">
+			<i class="menu__icon fa fa-envelope"></i>
+			<span class="menu__text">Add Event</span>
 		</a>
 		<a class="menu__item" href="#">
 			<i class="menu__icon fa fa-bar-chart"></i>
-			<span class="menu__text">Friends</span>
+			<span class="menu__text">My Meetings</span>
 		</a>
 		<a class="menu__item" href="{% url 'logout' %}">
 			<i class="menu__icon fa fa-sliders"></i>
@@ -392,7 +393,5 @@
 	</div>
 	<div class="copyright">copyright &copy; 2018</div>
 </sidebar>
-
-
 
 </html>
