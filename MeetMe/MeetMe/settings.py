@@ -43,6 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    #For social logins
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
 ]
 
 MIDDLEWARE = [
@@ -112,6 +119,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#For auth delete if problematic
+AUTHENTICATION_BACKENDS = (
+
+    #Needed to login by username in Django admin, regardless of `allauth`
+    #'django.contrib.auth.backends.ModelBackend',
+
+    #`allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+)
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -142,3 +160,9 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'noreply.service.meetme@gmail.com'
 EMAIL_HOST_PASSWORD = 'egeefehan123'
+
+#Use first site as the site id
+SITE_ID=1
+
+#For google login redirect
+LOGIN_REDIRECT_URL= '/eventCalendar/calendar'
