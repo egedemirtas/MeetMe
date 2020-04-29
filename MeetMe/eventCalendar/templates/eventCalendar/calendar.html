@@ -111,8 +111,8 @@
 							},
 							true // make the event "stick"
 						);
-						start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
-						end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+						start = $.fullCalendar.formatDate(start, "yyyy-MM-dd HH:mm:ss");
+						end = $.fullCalendar.formatDate(end, "yyyy-MM-dd HH:mm:ss");
 						$.ajax({
 								type: "GET",
 								url: 'add_event',
@@ -171,17 +171,7 @@
 								}
 							});
 						}
-					},
-				events: [
-						{% for event in events %}
-							{
-								title: "{{ event.name}}",
-								start: '{{ event.start|date:"Y-m-d" }}',
-								end: '{{ event.end|date:"Y-m-d" }}',
-								id: '{{ event.id }}',
-							},
-						{% endfor %}
-				],
+					}
 			});
 	
 	
