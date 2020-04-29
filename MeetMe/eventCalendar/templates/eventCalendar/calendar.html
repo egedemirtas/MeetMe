@@ -62,43 +62,26 @@
 			/* initialize the calendar
 			-----------------------------------------------------------------*/
 	
-			var calendar =  $('#calendar').fullCalendar({
-				header: {
-					left: 'title',
-					center: 'agendaDay,agendaWeek,month',
-					right: 'prev,next today'
-				},
-				events: [
-						{% for event in events %}
-							{
-								title: "{{ event.name}}",
-								start: '{{ event.start|date:"Y-m-d" }}',
-								end: '{{ event.end|date:"Y-m-d" }}',
-								id: '{{ event.id }}',
-							},
-						{% endfor %}
-					],
-				editable: true,
-				firstDay: 1, //  1(Monday) this can be changed to 0(Sunday) for the USA system
-				selectable: true,
-				defaultView: 'month',
-	
-				axisFormat: 'h:mm',
-				columnFormat: {
-					month: 'ddd',    // Mon
-					week: 'ddd d', // Mon 7
-					day: 'dddd M/d',  // Monday 9/7
-					agendaDay: 'dddd d'
-				},
-				titleFormat: {
-					month: 'MMMM yyyy', // September 2009
-					week: "MMMM yyyy", // September 2009
-					day: 'MMMM yyyy'                  // Tuesday, Sep 8, 2009
-				},
-				eventLimit: true,
-				allDaySlot: false,
-				selectHelper: true,
-				
+			var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                events: [
+                    {% for event in events %}
+                        {
+                            title: "{{ event.name}}",
+                            start: '{{ event.start|date:"Y-m-d" }}',
+                            end: '{{ event.end|date:"Y-m-d" }}',
+                            id: '{{ event.id }}',
+                        },
+                    {% endfor %}
+                ],
+                selectable: true,
+                selectHelper: true,
+                editable: true,
+                eventLimit: true,
 				select: function(start, end, allDay) {
 					var title = prompt('Event Title:');
 					if (title) {
