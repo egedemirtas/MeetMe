@@ -20,8 +20,28 @@ def calendar(request):
     user = request.user
     #all_events = Events.objects.all()
     all_events = Events.objects.filter(userID = user)
+    myList =[]
+    for i in all_events:
+        #this is the timezone to be converted
+        tz = pytz.timezone('Europe/Istanbul')
+        #convert event.start to tz timezone, event.start was utc before!!!
+        q = i.start.astimezone(tz)
+        x = str(q)
+        xList = x.split()
+        y = xList[0] + 'T' + xList[1].split('+')[0]
+        
+        q = i.end.astimezone(tz)
+        k = str(q)
+        kList = k.split()
+        z = kList[0] + 'T' + kList[1].split('+')[0]
+
+        m = i.name
+        l = i.id
+
+        myList.append([y,z,m,l])
+
     context = {
-        "events":all_events,
+        "events":myList,
     }
     #return render(request,'eventCalendar/calendar1.html',context)
     return render(request,'eventCalendar/calendar.html',context)  ##testing
@@ -70,6 +90,7 @@ def add_event(request):
     print("this is start:", start)
     print("this is end:", end)
     print("this is title:", title)
+
     start_unaware = datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
     start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
     #start_utc = start_aware.astimezone(pytz.utc)
@@ -77,11 +98,12 @@ def add_event(request):
     end_unaware = datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
     end_aware = pytz.timezone('Europe/Istanbul').localize(end_unaware, is_dst=None)
     #end_utc = end_aware.astimezone(pytz.utc)
-
+    
     userID = request.user
-    #event = Events(name=str(title), start=start_aware, end=end_aware, userID=userID)
+    #event = Events(name=str(title), start=start, end=end, userID=userID)
     event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
     event.save()
+    
     """
     #delete these if you want to use above part
     if request.method == 'POST':
@@ -122,11 +144,13 @@ def update(request):
     event.end = end
     event.name = title
     event.save()
+    
     data = {}
     return JsonResponse(data)
 
 def remove(request):
     id = request.GET.get("id", None)
+    print("deleted id is:", id)
     event = Events.objects.get(id=id)
     event.delete()
     data = {}
