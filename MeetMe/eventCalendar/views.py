@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from MeetMe.settings import EMAIL_HOST_USER
 from django.template.loader import render_to_string
 
-from eventCalendar.models import Events, Meetings, MeetingParticipation, Meetings_Computed
+from eventCalendar.models import Events, Meetings, MeetingParticipation
 from datetime import datetime, timedelta
 import pytz
 from operator import itemgetter
@@ -20,8 +20,28 @@ def calendar(request):
     user = request.user
     #all_events = Events.objects.all()
     all_events = Events.objects.filter(userID = user)
+    myList =[]
+    for i in all_events:
+        #this is the timezone to be converted
+        tz = pytz.timezone('Europe/Istanbul')
+        #convert event.start to tz timezone, event.start was utc before!!!
+        q = i.start.astimezone(tz)
+        x = str(q)
+        xList = x.split()
+        y = xList[0] + 'T' + xList[1].split('+')[0]
+        
+        q = i.end.astimezone(tz)
+        k = str(q)
+        kList = k.split()
+        z = kList[0] + 'T' + kList[1].split('+')[0]
+
+        m = i.name
+        l = i.id
+
+        myList.append([y,z,m,l])
+
     context = {
-        "events":all_events,
+        "events":myList,
     }
     #return render(request,'eventCalendar/calendar1.html',context)
     return render(request,'eventCalendar/calendar.html',context)  ##testing
@@ -63,10 +83,13 @@ def myMeetings(request):
     #return render(request,'eventCalendar/addMeeting.html',context)
 
 def add_event(request):
-    """
+    
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
+    print("this is start:", start)
+    print("this is end:", end)
+    print("this is title:", title)
 
     start_unaware = datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
     start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
@@ -75,8 +98,13 @@ def add_event(request):
     end_unaware = datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
     end_aware = pytz.timezone('Europe/Istanbul').localize(end_unaware, is_dst=None)
     #end_utc = end_aware.astimezone(pytz.utc)
+    
+    userID = request.user
+    #event = Events(name=str(title), start=start, end=end, userID=userID)
+    event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
+    event.save()
+    
     """
-
     #delete these if you want to use above part
     if request.method == 'POST':
         start=request.POST['start']
@@ -89,16 +117,12 @@ def add_event(request):
         event = Events(name=str(title), start=start, end=end, userID=userID)
         event.save()
         return redirect('addEvent')
+    
     #for debug
     user = request.user
     userEvents = Events.objects.filter(userID = user)
     for event in userEvents:
         print(event.start)
-        """
-        strippedEvent = str(event.start).split('+')[0]
-        start_unaware = datetime.strptime(strippedEvent,"%Y-%m-%d %H:%M:%S")
-        start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
-        """
         #this is the timezone to be converted
         tz = pytz.timezone('Europe/Istanbul')
         #convert event.start to tz timezone, event.start was utc before!!!
@@ -107,7 +131,7 @@ def add_event(request):
     """
     data = {}
     return JsonResponse(data)
-    """
+    
     render(request, 'eventCalendar/addEvent.html')
 
 def update(request):
@@ -120,11 +144,13 @@ def update(request):
     event.end = end
     event.name = title
     event.save()
+    
     data = {}
     return JsonResponse(data)
 
 def remove(request):
     id = request.GET.get("id", None)
+    print("deleted id is:", id)
     event = Events.objects.get(id=id)
     event.delete()
     data = {}
@@ -159,6 +185,7 @@ def createMeeting(request):
         user = User.objects.get(username = part)
         print(user.username) ##
         invitation(request,user,creatorID)
+    """
     ##start the timer
     #timer = Timer(120.0, computeMeeting(meeting.meetingID))
     args=[]
@@ -166,7 +193,7 @@ def createMeeting(request):
     timer = Timer(90.0, computeMeeting,args)
     timer.start()
     ## check if all users have accepted
-
+    """
     return render(request,'eventCalendar/calendar.html')
 
 def invitation(request,user,creator):
@@ -186,6 +213,8 @@ def acceptInvite(request):
     meetingPart=MeetingParticipation.objects.get(partUsername = user.username)
     meetingPart.attendance=True
     meetingPart.save()
+
+"""
 #this will compute the available time frames of an invitation
 def computeMeeting(currentID):
     print(currentID,"------------------------------")
@@ -288,3 +317,4 @@ def computeMeeting(currentID):
     for i in idList:
         part = User.objects.get(id =i)
         event = Events.objects.create(name = meetingName[0], start=solutions[0][0], end=solutions[0][1], userID=part)
+"""
