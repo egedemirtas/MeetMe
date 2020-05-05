@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     #'accounts.apps.AccountsConfig',
     'eventCalendar.apps.EventcalendarConfig',
+    'mymeetings.apps.MymeetingsConfig',
     #'home.apps.HomeConfig',
     'googleApi.apps.GoogleapiConfig',
     'django.contrib.auth',
@@ -162,7 +163,7 @@ EMAIL_HOST_USER = 'noreply.service.meetme@gmail.com'
 EMAIL_HOST_PASSWORD = 'egeefehan123'
 
 #Use first site as the site id
-SITE_ID=1
+SITE_ID=2
 
 #For google login redirect
 LOGIN_REDIRECT_URL= '/eventCalendar/calendar'

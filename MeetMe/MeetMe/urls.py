@@ -23,4 +23,5 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('eventCalendar/', include('eventCalendar.urls')),
     path('api',include('googleApi.urls')),
+    path('mymeetings/',include('mymeetings.urls')),
 ]

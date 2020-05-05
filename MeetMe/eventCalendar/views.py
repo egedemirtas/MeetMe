@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from MeetMe.settings import EMAIL_HOST_USER
 from django.template.loader import render_to_string
 
-from eventCalendar.models import Events, Meetings, MeetingParticipation
+from eventCalendar.models import Events, Meetings, MeetingParticipation, MeetingEvents
 from datetime import datetime, timedelta
 import pytz
 from operator import itemgetter
@@ -72,15 +72,6 @@ def addEvent(request):
     context = {
     }
     return render(request,'eventCalendar/addEvent.html',context)  ##testing
-    #return render(request,'eventCalendar/addMeeting.html',context)
-    
-def myMeetings(request):
-    user = request.user
-    #all_events = Events.objects.all()
-
-    context = {
-    }
-    return render(request,'eventCalendar/myMeetings.html',context)  ##testing
     #return render(request,'eventCalendar/addMeeting.html',context)
 
 def add_event(request):
@@ -158,9 +149,58 @@ def remove(request):
     return JsonResponse(data)
 
 def createMeeting(request):
-    #create a meeting
-    ########
+    #these are dummy, data must be received from request
+    creatorID = User.objects.get(username = "kobee") #user = request.user
+    meetingName = "Internship Interview"
+    is_decided = False
+    location = "Istanbul/Kadikoy"
+    note = "meet at starbucks"
+    participants = ["dwayne", "efehan", "ege0"]
+    recurrence = "Weekly"
+    a = datetime(2020, 5, 3, 9, 30, 00, 0)
+    b = datetime(2020, 5, 3, 10, 30, 00, 0)
+    c = datetime(2020, 5, 3, 11, 00, 00, 0)
+    d = datetime(2020, 5, 3, 14, 00, 00, 0)
+    e = datetime(2020, 5, 3, 17, 00, 00, 0)
+    f = datetime(2020, 5, 3, 23, 00, 00, 0)
+    meetingIntervals = [[a, b], [c, d], [e, f]]
 
+    
+    #create meeting: participants is unnecessary
+    meeting = Meetings.objects.create(creatorID=creatorID, meetingName=meetingName, 
+                is_decided=is_decided, location=location, note=note, participants=None, recurrence=recurrence)
+    meeting.save()
+    print("saved meeting id is:", meeting.pk)
+
+    #save the time intervals for the meeting
+    for i in range(len(meetingIntervals)):
+        meetingsEvents = MeetingEvents.objects.create(meetingID = meeting, start=meetingIntervals[i][0],end=meetingIntervals[i][1],voteNumber=0)
+        meetingsEvents.save()
+
+    #save for meetings attendance
+    for i in participants:
+        partid = User.objects.get(username=i)#get the id of participant
+        #for now since noone voted, meetingEventID is null(None)
+        meetingParticipation = MeetingParticipation.objects.create(meetingID = meeting, meetingEventID=None, partUsername = i, partID = partid.id, is_voted=False)
+    
+    #invited meeting list is unnecessary
+    
+    #send invitations
+    for part in participants:
+        user = User.objects.get(username = part)
+        print(user.username)
+        invitation(request,user,creatorID)
+
+    ##start the timer
+    #timer = Timer(120.0, computeMeeting(meeting.meetingID))
+    args=[]
+    args.append(request)
+    args.append(participants)
+    args.append(creatorID)
+    timer = Timer(60.0, invitationReminder, args)
+    timer.start()
+    
+    '''
     meetingName = request.POST['meetingName']
     creatorID = request.user
     user = User.objects.get(username = "test1")
@@ -169,7 +209,6 @@ def createMeeting(request):
 
     user2 = User.objects.get(username = "test2")
     invitation(request,user2,creatorID)
-    ########
 
     beginLimit = request.POST["beginLimit"]
     endLimit = request.POST["endLimit"]
@@ -185,17 +224,8 @@ def createMeeting(request):
     attendance = False
     for i in myList:
         meetingPart = MeetingParticipation.objects.create(meetingID = meetingID, partUsername = i, attendance = attendance)
+    '''
 
-    #save for computed meeting times
-    """meetingIsActive = False
-    computedStart = datetime(2019, 10, 9, 23, 55, 59, 342380)
-    computedEnd = datetime(2019, 10, 9, 23, 55, 59, 342380)
-    compMeeting = Meetings_Computed.objects.create(meetingID = meetingID, meetingIsActive = meetingIsActive, computedStart = computedStart, computedEnd = computedEnd)"""
-
-    for part in myList:
-        user = User.objects.get(username = part)
-        print(user.username) ##
-        invitation(request,user,creatorID)
     """
     ##start the timer
     #timer = Timer(120.0, computeMeeting(meeting.meetingID))
@@ -205,7 +235,25 @@ def createMeeting(request):
     timer.start()
     ## check if all users have accepted
     """
-    return render(request,'eventCalendar/calendar.html')
+    return redirect('calendar')
+
+def invitationReminder(request,participants,creator):
+    #token = default_token_generator.make_token(user)
+    for part in participants:
+        partObj = User.objects.get(username=part)
+        current_site = get_current_site(request)
+        subject = 'This is a reminder that you have been invited by'+ str(creator.username) +" to participate in a poll."
+        message = render_to_string('eventCalendar/acceptInvitation.html', {
+                    'user': part,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(partObj.pk)),
+                    'token': urlsafe_base64_encode(force_bytes(partObj.password)),
+                })
+        partObj.email_user(subject, message)
+
+
+
+
 
 def invitation(request,user,creator):
     #token = default_token_generator.make_token(user)
@@ -218,6 +266,7 @@ def invitation(request,user,creator):
                 'token': urlsafe_base64_encode(force_bytes(user.password)),
             })
     user.email_user(subject, message)
+
 ## if invitation accepted alter db accordingly
 def acceptInvite(request,uidb64,token):
     uid = force_text(urlsafe_base64_decode(uidb64))

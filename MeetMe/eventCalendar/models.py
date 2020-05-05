@@ -52,10 +52,12 @@ class invitedMeetingList(models.Model):
 class MeetingParticipation(models.Model):
     meetingParID = models.AutoField(primary_key=True)
     meetingID = models.ForeignKey(Meetings, null=True, on_delete = models.CASCADE)
+    meetingEventID = models.ForeignKey(MeetingEvents, null=True, on_delete = models.CASCADE)
     partID = models.IntegerField(null=True)
     partUsername = models.CharField(max_length=255, null=True, blank=True)
-    attendance = models.BooleanField(default=False)
+    #attendance = models.BooleanField(default=False)
     is_voted = models.BooleanField(default=False)
+
 
 
 """
