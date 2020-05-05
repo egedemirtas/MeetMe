@@ -15,6 +15,7 @@ from eventCalendar.models import Events, Meetings, MeetingParticipation
 from datetime import datetime, timedelta
 import pytz
 from operator import itemgetter
+from django.contrib import auth
 # Create your views here.
 def calendar(request):
     user = request.user
@@ -158,8 +159,18 @@ def remove(request):
 
 def createMeeting(request):
     #create a meeting
+    ########
+
     meetingName = request.POST['meetingName']
     creatorID = request.user
+    user = User.objects.get(username = "test1")
+
+    invitation(request,user,creatorID)####
+
+    user2 = User.objects.get(username = "test2")
+    invitation(request,user2,creatorID)
+    ########
+
     beginLimit = request.POST["beginLimit"]
     endLimit = request.POST["endLimit"]
     print(beginLimit)
@@ -203,16 +214,25 @@ def invitation(request,user,creator):
     message = render_to_string('eventCalendar/acceptInvitation.html', {
                 'user': user,
                 'domain': current_site.domain,
-                #'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                #'token': account_activation_token.make_token(user),
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': urlsafe_base64_encode(force_bytes(user.password)),
             })
     user.email_user(subject, message)
 ## if invitation accepted alter db accordingly
-def acceptInvite(request):
-    user=request.user
-    meetingPart=MeetingParticipation.objects.get(partUsername = user.username)
-    meetingPart.attendance=True
-    meetingPart.save()
+def acceptInvite(request,uidb64,token):
+    uid = force_text(urlsafe_base64_decode(uidb64))
+    user = User.objects.get(pk=uid)
+    uid = force_text(urlsafe_base64_decode(uidb64))
+    if user is not None and user.password==force_text(urlsafe_base64_decode(token)):
+             auth.login(request,user)
+             print('User login')
+             return redirect('/eventCalendar/calendar')
+    else:
+        print("Fatal Error")         
+             
+    #meetingPart=MeetingParticipation.objects.get(partUsername = user.username)
+    #meetingPart.attendance=True
+    #meetingPart.save()
 
 """
 #this will compute the available time frames of an invitation
