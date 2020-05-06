@@ -167,7 +167,7 @@ def remove(request):
 
 def createMeeting(request):
     #these are dummy, data must be received from request
-    creatorID = User.objects.get(username = "efe") #user = request.user
+    creatorID = User.objects.get(username = "efehan") #user = request.user
     meetingName = "Internship Interview"
     is_decided = False
     location = "Istanbul/Kadikoy"

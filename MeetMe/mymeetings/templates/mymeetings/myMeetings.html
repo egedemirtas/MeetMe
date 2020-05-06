@@ -103,6 +103,73 @@
 <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
   	<div class="container">
+		{% for created in createdMeetings %}
+			<div class="row row-striped">
+				<div class="col-2 text-right">
+					<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
+					<h2>APRIL</h2>
+				</div>
+				<div class="col-10">
+					<h3 class="text-uppercase"><strong>{{ created.meetingName }}</strong></h3>
+					<ul class="list-inline">
+						{% if created.is_decided == True %}
+							<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
+							<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 8:10 PM - 8:20 PM</li>
+						
+							<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll has ended</li>
+						{% endif %}
+						{% if created.is_decided == False %}
+							<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll is online </li>
+						{% endif %}
+					</ul>
+					<p>{{ created.location }}</p>
+					<p>{{ created.note }}</p>
+					<p>{{ created.recurrence }}</p>
+					
+					<form action="voting" method="POST">
+						{% csrf_token %}
+						<button class="btn btn-outline-primary" name="meetingID_r" type="submit" value="{{created.meetingID}}">Vote</button>
+					</form>
+					<form action="edit" method="POST">
+						{% csrf_token %}
+						<button class="btn btn-outline-primary" name="meetingID_r" type="submit" value="{{created.meetingID}}">Edit</button>
+					</form>
+				</div>
+				
+				
+			</div>
+		{% endfor %}
+
+		{% for part in partMeetings %}
+			<div class="row row-striped">
+				<div class="col-2 text-right">
+					<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
+					<h2>APRIL</h2>
+				</div>
+				<div class="col-10">
+					<h3 class="text-uppercase"><strong>{{ part.0.meetingName }}</strong></h3>
+					<ul class="list-inline">
+						<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
+						<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 8:10 PM - 8:20 PM</li>
+						{% if part.0.is_decided == True %}
+							<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll has ended</li>
+						{% endif %}
+						{% if part.0.is_decided == False %}
+							<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll is online </li>
+						{% endif %}
+					</ul>
+					<p>{{ part.0.location }}</p>
+					<p>{{ part.0.note }}</p>
+					<p>{{ part.0.recurrence }}</p>
+					<form action="voting" method="POST">
+						{% csrf_token %}
+						<button class="btn btn-outline-primary" name="meetingID_r" type="submit" value="{{created.meetingID}}">Vote</button>
+					</form>
+					
+				</div>
+			</div>
+		{% endfor %}
+
   		<div class="row row-striped">
   			<div class="col-2 text-right">
   				<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
