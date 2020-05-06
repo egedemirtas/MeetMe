@@ -30,7 +30,7 @@ def calendar(request):
         x = str(q)
         xList = x.split()
         y = xList[0] + 'T' + xList[1].split('+')[0]
-        
+
         q = i.end.astimezone(tz)
         k = str(q)
         kList = k.split()
@@ -65,6 +65,23 @@ def addMeeting(request):
     #return render(request,'eventCalendar/calendar1.html',context)  ##testing
     return render(request,'eventCalendar/addMeeting.html',context)
 
+def polls(request):
+    user = request.user
+    #all_events = Events.objects.all()
+
+    context = {
+    }
+    #return render(request,'eventCalendar/calendar1.html',context)  ##testing
+    return render(request,'eventCalendar/votepolls.html',context)
+
+def myMeetings(request):
+    user = request.user
+    #all_events = Events.objects.all()
+
+    context = {
+    }
+    #return render(request,'eventCalendar/calendar1.html',context)  ##testing
+    return render(request,'eventCalendar/myMeetings.html',context)
 def addEvent(request):
     user = request.user
     #all_events = Events.objects.all()
@@ -75,7 +92,7 @@ def addEvent(request):
     #return render(request,'eventCalendar/addMeeting.html',context)
 
 def add_event(request):
-    
+
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
@@ -90,12 +107,12 @@ def add_event(request):
     end_unaware = datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
     end_aware = pytz.timezone('Europe/Istanbul').localize(end_unaware, is_dst=None)
     #end_utc = end_aware.astimezone(pytz.utc)
-    
+
     userID = request.user
     #event = Events(name=str(title), start=start, end=end, userID=userID)
     event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
     event.save()
-    
+
     """
     #delete these if you want to use above part
     if request.method == 'POST':
@@ -109,7 +126,7 @@ def add_event(request):
         event = Events(name=str(title), start=start, end=end, userID=userID)
         event.save()
         return redirect('addEvent')
-    
+
     #for debug
     user = request.user
     userEvents = Events.objects.filter(userID = user)
@@ -123,7 +140,7 @@ def add_event(request):
     """
     data = {}
     return JsonResponse(data)
-    
+
     render(request, 'eventCalendar/addEvent.html')
 
 def update(request):
@@ -136,7 +153,7 @@ def update(request):
     event.end = end
     event.name = title
     event.save()
-    
+
     data = {}
     return JsonResponse(data)
 
@@ -165,9 +182,9 @@ def createMeeting(request):
     f = datetime(2020, 5, 3, 23, 00, 00, 0)
     meetingIntervals = [[a, b], [c, d], [e, f]]
 
-    
+
     #create meeting: participants is unnecessary
-    meeting = Meetings.objects.create(creatorID=creatorID, meetingName=meetingName, 
+    meeting = Meetings.objects.create(creatorID=creatorID, meetingName=meetingName,
                 is_decided=is_decided, location=location, note=note, participants=None, recurrence=recurrence)
     meeting.save()
     print("saved meeting id is:", meeting.pk)
@@ -182,9 +199,9 @@ def createMeeting(request):
         partid = User.objects.get(username=i)#get the id of participant
         #for now since noone voted, meetingEventID is null(None)
         meetingParticipation = MeetingParticipation.objects.create(meetingID = meeting, meetingEventID=None, partUsername = i, partID = partid.id, is_voted=False)
-    
+
     #invited meeting list is unnecessary
-    
+
     #send invitations
     for part in participants:
         user = User.objects.get(username = part)
@@ -199,7 +216,7 @@ def createMeeting(request):
     args.append(creatorID)
     timer = Timer(60.0, invitationReminder, args)
     timer.start()
-    
+
     '''
     meetingName = request.POST['meetingName']
     creatorID = request.user
@@ -277,8 +294,8 @@ def acceptInvite(request,uidb64,token):
              print('User login')
              return redirect('/eventCalendar/calendar')
     else:
-        print("Fatal Error")         
-             
+        print("Fatal Error")
+
     #meetingPart=MeetingParticipation.objects.get(partUsername = user.username)
     #meetingPart.attendance=True
     #meetingPart.save()
