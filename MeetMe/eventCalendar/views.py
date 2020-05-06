@@ -150,12 +150,12 @@ def remove(request):
 
 def createMeeting(request):
     #these are dummy, data must be received from request
-    creatorID = User.objects.get(username = "kobee") #user = request.user
+    creatorID = User.objects.get(username = "efe") #user = request.user
     meetingName = "Internship Interview"
     is_decided = False
     location = "Istanbul/Kadikoy"
     note = "meet at starbucks"
-    participants = ["dwayne", "efehan", "ege0"]
+    participants = ["test1", "test2"]
     recurrence = "Weekly"
     a = datetime(2020, 5, 3, 9, 30, 00, 0)
     b = datetime(2020, 5, 3, 10, 30, 00, 0)
