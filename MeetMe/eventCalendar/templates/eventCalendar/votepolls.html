@@ -59,35 +59,45 @@
   }
 
   /* Individual bars */
-  .bar-5 {
-    width: 60%;
+  .bar-1.bar-2.bar-3.bar-4.bar-5 {
+    width: 100%;
+    /* width: 0; */
     height: 18px;
     background-color: #4CAF50;
   }
 
-  .bar-4 {
-    width: 30%;
+  .bar-1.bar-2.bar-3.bar-4 {
+    width: 80%;
+    /* width: 0; */
     height: 18px;
     background-color: #2196F3;
   }
 
-  .bar-3 {
-    width: 10%;
+  .bar-1.bar-2.bar-3 {
+    width: 60%;
+    /* width: 0; */
     height: 18px;
     background-color: #00bcd4;
   }
 
-  .bar-2 {
-    width: 4%;
+  .bar-1.bar-2 {
+    width: 40%;
+    /* width: 0; */
     height: 18px;
     background-color: #ff9800;
   }
 
   .bar-1 {
-    width: 15%;
+    width: 20%;
+    /* width: 0; */
     height: 18px;
     background-color: #f44336;
   }
+
+  .bar {
+    height: 18px;
+  }
+
 
   /* Responsive layout - make the columns stack on top of each other instead of next to each other */
   @media (max-width: 400px) {
@@ -116,54 +126,87 @@
 <hr style="border:3px solid #f1f1f1">
 
 <div class="row">
-  <div class="side">
-    <input type="checkbox" name="option" id="option1" value="1" />
-    <label for="option1">Option 1</label>
-  </div>
-  <div class="middle">
-    <div class="bar-container">
-      <div class="bar-5"></div>
+  <div>
+    <div class="side">
+      <input type="checkbox" name="option" id="option1" value="0" />
+      <label for="option1">Option 1</label>
+    </div>
+    <div class="middle">
+      <div class="bar-container">
+        <div class="bar"></div>
+      </div>
+    </div>
+    <div class="side right">
+      <div>kackisioyvermis</div><br>
     </div>
   </div>
-  <div class="side right">
-    <div>kackisioyvermis</div><br>
-  </div>
-  <div class="side">
-    <input type="checkbox" name="option" id="option2" value="2" />
-    <label for="option2">Option 2</label>
-  </div>
-  <div class="middle">
-    <div class="bar-container">
-      <div class="bar-4"></div>
+
+  <div>
+    <div class="side">
+      <input type="checkbox" name="option" id="option2" value="0" />
+      <label for="option2">Option 2</label>
+    </div>
+    <div class="middle">
+      <div class="bar-container">
+        <div class="bar"></div>
+      </div>
+    </div>
+    <div class="side right">
+      <div>kackisioyvermis</div><br>
     </div>
   </div>
-  <div class="side right">
-    <div>kackisioyvermis</div><br>
-  </div>
-  <div class="side">
-    <input type="checkbox" name="option" id="option3" value="3" />
-    <label for="option3">Option 3</label>
-  </div>
-  <div class="middle">
-    <div class="bar-container">
-      <div class="bar-3"></div>
+  <div>
+    <div class="side">
+      <input type="checkbox" name="option" id="option3" value="0" />
+      <label for="option3">Option 3</label>
+    </div>
+    <div class="middle">
+      <div class="bar-container">
+        <div class="bar"></div>
+      </div>
+    </div>
+    <div class="side right">
+      <div>kackisioyvermis</div><br>
     </div>
   </div>
-  <div class="side right">
-    <div>kackisioyvermis</div><br>
-  </div>
-  <div class="side">
-    <input type="checkbox" name="option" id="option4" value="4" />
-    <label for="option4">Option 4</label>
-  </div>
-  <div class="middle">
-    <div class="bar-container">
-      <div class="bar-2"></div>
+  <div>
+    <div class="side">
+      <input type="checkbox" name="option" id="option4" value="0" />
+      <label for="option4">Option 4</label>
     </div>
-  </div>
-  <div class="side right">
-    <div>kackisioyvermis</div><br>
+    <div class="middle">
+      <div class="bar-container">
+        <div class="bar"></div>
+      </div>
+    </div>
+    <div class="side right">
+      <div>kackisioyvermis</div><br>
+    </div>
   </div>
 </div>
 </div>
 <button id="submit-button">Submit</button>
+<script>
+
+  var options = $(".row").children();
+  var value = 0;
+  for (var i = 0; i < options.length; i++) {
+    value = options[i].querySelector("input[name='option']").value;
+    options[i].querySelector(".side.right div").innerHTML = value;
+  }
+
+  $("#submit-button").click(function (e) {
+    $.each($("input[name='option']:checked"), function () {
+      $(this).attr("value", parseInt($(this).val(), 10) + 1)
+    });
+
+    for (var i = 0; i < options.length; i++) {
+      value = options[i].querySelector("input[name='option']").value;
+      options[i].querySelector(".side.right div").innerHTML = value;
+      if (value > 0) {
+        options[i].querySelector(".bar-container div").classList.add(`bar-${value}`)
+      }
+    }
+  })
+
+</script>
