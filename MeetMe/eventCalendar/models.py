@@ -23,6 +23,8 @@ class Meetings(models.Model):
     recurrence = models.CharField(max_length=255, null=True, blank=True)
     is_decided = models.BooleanField(default=False)
     creatorID = models.ForeignKey(User, null=True, on_delete = models.CASCADE)
+    start = models.DateTimeField(null=True, blank=True)
+    end = models.DateTimeField(null=True, blank=True)
     """
     beginLimit = models.DateTimeField(null=True)
     endLimit = models.DateTimeField(null=True)

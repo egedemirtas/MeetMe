@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from eventCalendar.models import Events, Meetings, MeetingParticipation, MeetingEvents
-
+import calendar
+from datetime import datetime, timedelta
+import pytz
 # Create your views here.
 def myMeetings(request):
     user = request.user
@@ -17,11 +19,24 @@ def myMeetings(request):
     #search these meeting ids in meetings
     for i in range(len(meetingIDs)):
         meeting = Meetings.objects.filter(meetingID = meetingIDs[i].meetingID.meetingID)
+        '''
+        if meeting.start is not None:
+            #this is the timezone to be converted
+            tz = pytz.timezone('Europe/Istanbul')
+            #convert event.start to tz timezone, event.start was utc before!!!
+            meeting.start = meeting.start.astimezone(tz)
+            meeting.end = meeting.end.astimezone(tz)
+            '''
         partMeetings.append(meeting)
-
-    for i in partMeetings:
-        print(i[0].note)
-
+    '''
+    for i in userMeetings:
+        if i.start is not None:
+            #this is the timezone to be converted
+            tz = pytz.timezone('Europe/Istanbul')
+            #convert event.start to tz timezone, event.start was utc before!!!
+            i.start = i.start.astimezone(tz)
+            i.end = i.end.astimezone(tz)
+    '''
     context = {
         'createdMeetings': userMeetings,
         'partMeetings': partMeetings,
@@ -35,11 +50,12 @@ def voting(request):
     user=request.user
     #meetingID=16 ###
     meetingID=request.POST['meetingID_r']
-    print(meetingID)
+    print("-------------",meetingID)
     options=MeetingEvents.objects.filter(meetingID = meetingID)
     parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
     #print(options[0].voteNumber)
     ## it should wait for response from the front
+    '''
     if request.method=='POST':
         MeetingEventID=request.POST['id']
         result=MeetingEvents.objects.get(MeetingEventID = 1)
@@ -47,6 +63,6 @@ def voting(request):
         result.save()
         parc.is_voted=True
         parc.save()
-
+    '''
     return render(request,'mymeetings/voting.html', {'options': options})
     

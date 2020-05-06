@@ -105,16 +105,20 @@
   	<div class="container">
 		{% for created in createdMeetings %}
 			<div class="row row-striped">
+				
 				<div class="col-2 text-right">
-					<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
-					<h2>APRIL</h2>
+					{% if created.is_decided == True %}
+					<h1 class="display-4"><span class="badge badge-secondary">{{created.start.day}}</span></h1>
+					<h2>{{ created.start|date:'F' }}</h2>
+					{% endif %}
 				</div>
+				
 				<div class="col-10">
 					<h3 class="text-uppercase"><strong>{{ created.meetingName }}</strong></h3>
 					<ul class="list-inline">
 						{% if created.is_decided == True %}
-							<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
-							<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 8:10 PM - 8:20 PM</li>
+							<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> {{ created.start|date:"l" }}</li>
+							<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> {{created.start.time}} - {{created.end.time}}</li>
 						
 							<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll has ended</li>
 						{% endif %}
@@ -143,14 +147,18 @@
 		{% for part in partMeetings %}
 			<div class="row row-striped">
 				<div class="col-2 text-right">
+					{% if part.0.is_decided == True %}
 					<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
 					<h2>APRIL</h2>
+					{% endif %}
 				</div>
 				<div class="col-10">
 					<h3 class="text-uppercase"><strong>{{ part.0.meetingName }}</strong></h3>
 					<ul class="list-inline">
+						{% if part.0.is_decided == True %}
 						<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
 						<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 8:10 PM - 8:20 PM</li>
+						{% endif %}
 						{% if part.0.is_decided == True %}
 							<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll has ended</li>
 						{% endif %}
@@ -163,7 +171,7 @@
 					<p>{{ part.0.recurrence }}</p>
 					<form action="voting" method="POST">
 						{% csrf_token %}
-						<button class="btn btn-outline-primary" name="meetingID_r" type="submit" value="{{created.meetingID}}">Vote</button>
+						<button class="btn btn-outline-primary" name="meetingID_r" type="submit" value="{{part.0.meetingID}}">Vote</button>
 					</form>
 					
 				</div>
