@@ -167,12 +167,13 @@ def remove(request):
 
 def createMeeting(request):
     #these are dummy, data must be received from request
-    creatorID = User.objects.get(username = "efehan") #user = request.user
+    #creatorID = User.objects.get(username = "efehan") #user = request.user
+    creatorID = request.user
     meetingName = "Internship Interview"
     is_decided = False
     location = "Istanbul/Kadikoy"
     note = "meet at starbucks"
-    participants = ["test1", "test2"]
+    participants = ["efehan", "dwayne"]
     recurrence = "Weekly"
     a = datetime(2020, 5, 3, 9, 30, 00, 0)
     b = datetime(2020, 5, 3, 10, 30, 00, 0)
@@ -184,7 +185,7 @@ def createMeeting(request):
 
 
     #create meeting: participants is unnecessary
-    meeting = Meetings.objects.create(creatorID=creatorID, meetingName=meetingName,
+    meeting = Meetings.objects.create(creatorID=creatorID, meetingName=meetingName, 
                 is_decided=is_decided, location=location, note=note, participants=None, recurrence=recurrence)
     meeting.save()
     print("saved meeting id is:", meeting.pk)
@@ -199,9 +200,9 @@ def createMeeting(request):
         partid = User.objects.get(username=i)#get the id of participant
         #for now since noone voted, meetingEventID is null(None)
         meetingParticipation = MeetingParticipation.objects.create(meetingID = meeting, meetingEventID=None, partUsername = i, partID = partid.id, is_voted=False)
-
+    
     #invited meeting list is unnecessary
-
+    
     #send invitations
     for part in participants:
         user = User.objects.get(username = part)
