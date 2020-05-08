@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User
 from eventCalendar.models import Events, Meetings, MeetingParticipation, MeetingEvents
 import calendar
 from datetime import datetime, timedelta
@@ -17,26 +18,35 @@ def myMeetings(request):
     meetingIDs = MeetingParticipation.objects.filter(partID = user.id)
 
     #search these meeting ids in meetings
-    for i in range(len(meetingIDs)):
-        meeting = Meetings.objects.filter(meetingID = meetingIDs[i].meetingID.meetingID)
-        '''
-        if meeting.start is not None:
-            #this is the timezone to be converted
-            tz = pytz.timezone('Europe/Istanbul')
-            #convert event.start to tz timezone, event.start was utc before!!!
-            meeting.start = meeting.start.astimezone(tz)
-            meeting.end = meeting.end.astimezone(tz)
-            '''
-        partMeetings.append(meeting)
-    '''
+    for i in meetingIDs:
+        meeting = Meetings.objects.filter(meetingID = i.meetingID.meetingID)
+        print("current meetings is:", meeting[0].meetingID)
+        print("current start is:", meeting[0].start)
+        print("current end is:", meeting[0].end)
+        for k in meeting:
+            try:
+                tz = pytz.timezone('Europe/Istanbul')
+                k.start = k.start.astimezone(tz)
+                k.end = k.end.astimezone(tz)
+                print("After current start is:", k.start)
+                print("After current end is:", k.end)
+                creatorUsername = User.objects.filter(id = k.creatorID.id)
+                partMeetings.append([k, creatorUsername[0].username])
+            except AttributeError:
+                creatorUsername = User.objects.filter(id = k.creatorID.id)
+                partMeetings.append([k, creatorUsername[0].username])
+    
+    #convert time for the creator's meetings
     for i in userMeetings:
-        if i.start is not None:
+        try:
             #this is the timezone to be converted
             tz = pytz.timezone('Europe/Istanbul')
             #convert event.start to tz timezone, event.start was utc before!!!
             i.start = i.start.astimezone(tz)
             i.end = i.end.astimezone(tz)
-    '''
+        except AttributeError:
+            continue
+    
     context = {
         'createdMeetings': userMeetings,
         'partMeetings': partMeetings,

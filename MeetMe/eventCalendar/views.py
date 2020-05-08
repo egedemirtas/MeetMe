@@ -169,11 +169,11 @@ def createMeeting(request):
     #these are dummy, data must be received from request
     #creatorID = User.objects.get(username = "efehan") #user = request.user
     creatorID = request.user
-    meetingName = "Internship Interview"
+    meetingName = "Internship Interview1"
     is_decided = False
     location = "Istanbul/Kadikoy"
     note = "meet at starbucks"
-    participants = ["efehan", "dwayne"]
+    participants = ["kobee", "dwayne"]
     recurrence = "Weekly"
     a = datetime(2020, 5, 3, 9, 30, 00, 0)
     b = datetime(2020, 5, 3, 10, 30, 00, 0)
@@ -260,9 +260,9 @@ def invitationReminder(request,participants,creator):
     for part in participants:
         partObj = User.objects.get(username=part)
         current_site = get_current_site(request)
-        subject = 'This is a reminder that you have been invited by'+ str(creator.username) +" to participate in a poll."
+        subject = 'This is a reminder that you have been invited by '+ str(creator.username) +" to participate in a poll."
         message = render_to_string('eventCalendar/acceptInvitation.html', {
-                    'user': part,
+                    'user': partObj,
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(partObj.pk)),
                     'token': urlsafe_base64_encode(force_bytes(partObj.password)),
