@@ -20,16 +20,11 @@ def myMeetings(request):
     #search these meeting ids in meetings
     for i in meetingIDs:
         meeting = Meetings.objects.filter(meetingID = i.meetingID.meetingID)
-        print("current meetings is:", meeting[0].meetingID)
-        print("current start is:", meeting[0].start)
-        print("current end is:", meeting[0].end)
         for k in meeting:
             try:
                 tz = pytz.timezone('Europe/Istanbul')
                 k.start = k.start.astimezone(tz)
                 k.end = k.end.astimezone(tz)
-                print("After current start is:", k.start)
-                print("After current end is:", k.end)
                 creatorUsername = User.objects.filter(id = k.creatorID.id)
                 partMeetings.append([k, creatorUsername[0].username])
             except AttributeError:

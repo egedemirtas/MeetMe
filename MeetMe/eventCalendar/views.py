@@ -215,6 +215,7 @@ def createMeeting(request):
     args.append(request)
     args.append(participants)
     args.append(creatorID)
+    args.append(meeting.pk)
     timer = Timer(60.0, invitationReminder, args)
     timer.start()
 
@@ -255,19 +256,24 @@ def createMeeting(request):
     """
     return redirect('calendar')
 
-def invitationReminder(request,participants,creator):
+def invitationReminder(request,participants,creator,meetingID):
     #token = default_token_generator.make_token(user)
-    for part in participants:
-        partObj = User.objects.get(username=part)
-        current_site = get_current_site(request)
-        subject = 'This is a reminder that you have been invited by '+ str(creator.username) +" to participate in a poll."
-        message = render_to_string('eventCalendar/acceptInvitation.html', {
-                    'user': partObj,
-                    'domain': current_site.domain,
-                    'uid': urlsafe_base64_encode(force_bytes(partObj.pk)),
-                    'token': urlsafe_base64_encode(force_bytes(partObj.password)),
-                })
-        partObj.email_user(subject, message)
+    meeting = Meetings.objects.filter(meetingID=meetingID)#find the meeting object
+    if meeting[0].is_decided == False:#send reminder if the meeting hasnt been decided yet
+        for part in participants:
+            find_isVoted = MeetingParticipation.objects.filter(meetingID = meeting[0], partUsername=part)#find if the part has voted yet
+            print(find_isVoted)
+            if find_isVoted[0].is_voted == False:#send reminder only if the part hasnt voted
+                partObj = User.objects.get(username=part)
+                current_site = get_current_site(request)
+                subject = 'This is a reminder that you have been invited by '+ str(creator.username) +" to participate in a poll."
+                message = render_to_string('eventCalendar/acceptInvitation.html', {
+                            'user': partObj,
+                            'domain': current_site.domain,
+                            'uid': urlsafe_base64_encode(force_bytes(partObj.pk)),
+                            'token': urlsafe_base64_encode(force_bytes(partObj.password)),
+                        })
+                partObj.email_user(subject, message)
 
 
 
