@@ -13,9 +13,23 @@
 <script src="{% static 'js/jquery-ui.custom.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/fullcalendar.js' %}" type="text/javascript"></script>
 <script>
-  $( function() {
-    $( "#accordion" ).accordion();
-  } );
+ $(document).ready( function() {
+  
+  $('body').on("click", ".larg div h3", function(){
+    if ($(this).children('span').hasClass('close')) {
+      $(this).children('span').removeClass('close');
+    }
+    else {
+      $(this).children('span').addClass('close');
+    }
+    $(this).parent().children('p').slideToggle(250);
+  });
+  
+  $('body').on("click", "nav ul li a", function(){
+    var title = $(this).data('title');
+    $('.title').children('h2').html(title);
+  });
+});
 </script>
 <div class="wrapper">
   <main>
@@ -106,8 +120,10 @@
 
   	<div class="container">
 		<div id="accordion">
+			<article class="larg">
 		{% for created in createdMeetings %}
 		<hr/>
+		
 			<div class="row row-striped">
 				<div class="col-2 text-right">
 					{% if created.is_decided == True %}
@@ -153,7 +169,9 @@
 				
 			</div>
 		{% endfor %}
+			</article>
 		</div>
+		<article class="larg">
 		{% for part in partMeetings %}
 		<hr/>
 			<div class="row row-striped">
@@ -191,6 +209,8 @@
 			</div>
 		{% endfor %}
 		<hr/>
+	</article>
+	<article class="larg">
   		<div class="row row-striped">
   			<div class="col-2 text-right">
   				<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
@@ -199,7 +219,7 @@
   			<div class="col-10">
   				<h3 class="text-uppercase"><strong>CS308-Demo</strong></h3>
   				<ul class="list-inline">
-  				    <li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
+					<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
   					<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 8:10 PM - 8:20 PM</li>
   					<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Online</li>
   				</ul>
@@ -213,7 +233,7 @@
   				<h2>APRIL</h2>
   			</div>
   			<div class="col-10">
-  				<h3 class="text-uppercase"><strong>Next Sprint</strong></h3>
+  				<h3 class="text-uppercase"><strong>Next Sprint<span class="entypo-down-open"></span></strong></h3>
   				<ul class="list-inline">
   				    <li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Thursday</li>
   					<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 5:10 PM - 5:20 PM</li>
@@ -223,7 +243,7 @@
   			</div>
   		</div>
 	  </div>
-	
+	  </article>
 </main>
 <sidebar>
   <div class="logo">Meet Me</div>
