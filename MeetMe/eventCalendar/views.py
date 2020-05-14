@@ -288,7 +288,6 @@ def invitation(request,user,creator):
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': urlsafe_base64_encode(force_bytes(user.password)),
-
             })
     user.email_user(subject, message)
 
@@ -300,7 +299,7 @@ def acceptInvite(request,uidb64,token):
     if user is not None and user.password==force_text(urlsafe_base64_decode(token)):
              auth.login(request,user)
              print('User login')
-             return redirect('/eventCalendar/calendar')
+             return redirect('/mymeetings/mymeetings')
     else:
         print("Fatal Error")
 

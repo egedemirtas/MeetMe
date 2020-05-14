@@ -60,14 +60,16 @@ def voting(request):
     parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
     #print(options[0].voteNumber)
     ## it should wait for response from the front
-    '''
-    if request.method=='POST':
-        MeetingEventID=request.POST['id']
-        result=MeetingEvents.objects.get(MeetingEventID = 1)
-        result.voteNumber+=1
-        result.save()
+    
+    if request.method == 'POST' and request.POST.get('ids'):
+        print(meetingID)
+        MeetingEventIDs=request.POST['ids']
+        for MeetingEventID in MeetingEventIDs:
+            result=MeetingEvents.objects.get(MeetingEventID = MeetingEventID)
+            result.voteNumber+=1
+            result.save()
         parc.is_voted=True
         parc.save()
-    '''
+    
     return render(request,'mymeetings/voting.html', {'options': options})
     
