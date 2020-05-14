@@ -288,6 +288,7 @@ def invitation(request,user,creator):
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': urlsafe_base64_encode(force_bytes(user.password)),
+
             })
     user.email_user(subject, message)
 
