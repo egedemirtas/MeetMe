@@ -192,8 +192,8 @@
 			<div class="row row-striped">
 				<div class="col-2 text-right">
 					{% if part.0.is_decided == True %}
-					<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
-					<h2>APRIL</h2>
+					<h1 class="display-4"><span class="badge badge-secondary">{{part.0.start.day}}</span></h1>
+					<h2>{{ part.0.start|date:'F' }}</h2>
 					{% endif %}
 				</div>
 				<div class="col-10">
@@ -216,8 +216,7 @@
 					<p><i style="font-size:24px" class="fa">&#xf2be;</i> Creator: {{ part.1 }}</p>
 					<form action="voting" method="POST">
 						{% csrf_token %}
-						<button class="btn btn-outline-info" name="meetingID_r" type="submit" value="{{created.meetingID}}"
-						style="margin-left: 20px;">Vote</button>
+						<button class="btn btn-outline-info" name="meetingID_r" type="submit" value="{{part.0.meetingID}}" style="margin-left: 20px;">Vote</button>
 					</form>
 					
 				</div>
