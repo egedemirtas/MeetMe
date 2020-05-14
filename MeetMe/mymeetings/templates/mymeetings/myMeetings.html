@@ -35,6 +35,19 @@
   <main>
 <style>
 
+
+	.meeting_item:hover {
+        background-color:rgb(228, 226, 226);
+    }
+ 
+    p {
+      display:none;
+      margin-left:10px;
+      padding:0 15px;
+      border-left:1px solid #ccc;
+    }
+  
+
 	body {
 		margin-top: 40px;
 		text-align: center;
@@ -120,8 +133,9 @@
 
   	<div class="container">
 		<div id="accordion">
-			<article class="larg">
+		<article class="larg">
 		{% for created in createdMeetings %}
+		<div class="meeting_item">
 		<hr/>
 		
 			<div class="row row-striped">
@@ -166,19 +180,20 @@
 					</div>
 				</div>
 				
-				
+			</div>		
 			</div>
 		{% endfor %}
 			</article>
 		</div>
 		<article class="larg">
 		{% for part in partMeetings %}
+		<div class="meeting_item">
 		<hr/>
 			<div class="row row-striped">
 				<div class="col-2 text-right">
 					{% if part.0.is_decided == True %}
-					<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
-					<h2>APRIL</h2>
+					<h1 class="display-4"><span class="badge badge-secondary">{{part.0.start.day}}</span></h1>
+					<h2>{{ part.0.start|date:'F' }}</h2>
 					{% endif %}
 				</div>
 				<div class="col-10">
@@ -201,15 +216,18 @@
 					<p><i style="font-size:24px" class="fa">&#xf2be;</i> Creator: {{ part.1 }}</p>
 					<form action="voting" method="POST">
 						{% csrf_token %}
-						<button class="btn btn-outline-primary" name="meetingID_r" type="submit" value="{{part.0.meetingID}}">Vote</button>
+						<button class="btn btn-outline-info" name="meetingID_r" type="submit" value="{{part.0.meetingID}}" style="margin-left: 20px;">Vote</button>
 					</form>
 					
 				</div>
 			</div>
+		</div>
 		{% endfor %}
-		<hr/>
+
 	</article>
 	<article class="larg">
+		<div class="meeting_item">
+		<hr/>
   		<div class="row row-striped">
   			<div class="col-2 text-right">
   				<h1 class="display-4"><span class="badge badge-secondary">24</span></h1>
@@ -225,7 +243,9 @@
   				<p>Demo trial for CS308 course.Meet Me web application demo.</p>
   			</div>
 		  </div>
-		  <hr/>
+		 
+		</div>
+		<div class="meeting_item"><hr/>
   		<div class="row row-striped">
   			<div class="col-2 text-right">
   				<h1 class="display-4"><span class="badge badge-secondary">30</span></h1>
@@ -240,7 +260,7 @@
   				</ul>
   				<p>Usual meeting for CS308 course with course Teaching Assistant and take feedbacks for sprint.</p>
   			</div>
-  		</div>
+  		</div></div>
 	  </div>
 	  </article>
 </main>
@@ -257,17 +277,9 @@
       <i class="menu__icon fa fa-home"></i>
       <span class="menu__text">Profile</span>
     </a>
-    <a class="menu__item" href="{% url 'addmeeting' %}">
-      <i class="menu__icon fa fa-envelope"></i>
-      <span class="menu__text">Add Meeting</span>
-    </a>
     <a class="menu__item" href="{% url 'calendar' %}">
       <i class="menu__icon fa fa-calendar"></i>
-      <span class="menu__text">calendar</span>
-    </a>
-    <a class="menu__item " href="{% url 'addEvent' %}">
-      <i class="menu__icon fa fa-envelope"></i>
-      <span class="menu__text">Add Event</span>
+      <span class="menu__text">Calendar</span>
     </a>
     <a class="menu__item menu__item--active" href="#">
       <i class="menu__icon fa fa-bar-chart"></i>
