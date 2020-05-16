@@ -15,7 +15,7 @@
 <script>
  $(document).ready( function() {
   
-  $('body').on("click", ".larg div h3", function(){
+  $('body').on("click", ".larg div h4", function(){
     if ($(this).children('span').hasClass('close')) {
       $(this).children('span').removeClass('close');
     }
@@ -151,7 +151,7 @@
 				</div>
 				
 				<div class="col-10">
-					<h3 class="text-uppercase"><strong>{{ created.meetingName }}</strong></h3>
+					<h4 class="text-uppercase"><strong>{{ created.meetingName }}</strong></h4>
 					<ul class="list-inline">
 						{% if created.is_decided == True %}
 							<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> {{ created.start|date:"l" }}</li>
@@ -197,7 +197,7 @@
 					{% endif %}
 				</div>
 				<div class="col-10">
-					<h3 class="text-uppercase"><strong>{{ part.0.meetingName }}</strong></h3>
+					<h4 class="text-uppercase"><strong>{{ part.0.meetingName }}</strong></h4>
 					<ul class="list-inline">
 						{% if part.0.is_decided == True %}
 						<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
@@ -234,13 +234,14 @@
   				<h2>APRIL</h2>
   			</div>
   			<div class="col-10">
-  				<h3 class="text-uppercase"><strong>CS308-Demo</strong></h3>
+  				<h4 class="text-uppercase"><strong>CS308-Demo</strong></h4>
   				<ul class="list-inline">
 					<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Friday</li>
-  					<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 8:10 PM - 8:20 PM</li>
-  					<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Online</li>
+  					<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll has ended</li>
   				</ul>
-  				<p>Demo trial for CS308 course.Meet Me web application demo.</p>
+				  <p><i style="font-size:18px" class="fa">&#xf041;</i> Online</p>
+				  <p><i style="font-size:18px" class="fa">&#xf0e5;</i> Demo trial for CS308 course.Meet Me web application demo.</p>
+				  <p><i style="font-size:18px" class="fa">&#xf017;</i> 8:10 PM - 8:20 PM</p>	
   			</div>
 		  </div>
 		 
@@ -248,17 +249,18 @@
 		<div class="meeting_item"><hr/>
   		<div class="row row-striped">
   			<div class="col-2 text-right">
-  				<h1 class="display-4"><span class="badge badge-secondary">30</span></h1>
-  				<h2>APRIL</h2>
+  				<h1 class="display-4"><span class="badge badge-secondary">14</span></h1>
+  				<h2>MAY</h2>
   			</div>
   			<div class="col-10">
-  				<h3 class="text-uppercase"><strong>Next Sprint<span class="entypo-down-open"></span></strong></h3>
+  				<h4 class="text-uppercase"><strong>Next Sprint<span class="entypo-down-open"></span></strong></h4>
   				<ul class="list-inline">
   				    <li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> Thursday</li>
-  					<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> 5:10 PM - 5:20 PM</li>
-  					<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Online</li>
+  					<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> Poll has ended</li>
   				</ul>
-  				<p>Usual meeting for CS308 course with course Teaching Assistant and take feedbacks for sprint.</p>
+				  <p><i style="font-size:18px" class="fa">&#xf041;</i> Online</p>
+				  <p><i style="font-size:18px" class="fa">&#xf0e5;</i> Usual meeting for CS308 course with course Teaching Assistant and take feedbacks for sprint.</p>
+				  <p><i style="font-size:18px" class="fa">&#xf017;</i> 5:10 PM - 5:20 PM</p>	
   			</div>
   		</div></div>
 	  </div>
@@ -292,6 +294,6 @@
       </span>
     </a>
   </nav>
-  <div class="copyright">copyright &copy; 2018</div>
+  <div class="copyright">copyright &copy; 2020</div>
 </sidebar>
 </html>
