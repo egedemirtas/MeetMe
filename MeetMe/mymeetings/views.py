@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User
 from eventCalendar.models import Events, Meetings, MeetingParticipation, MeetingEvents
 import calendar
 from datetime import datetime, timedelta
@@ -17,26 +18,30 @@ def myMeetings(request):
     meetingIDs = MeetingParticipation.objects.filter(partID = user.id)
 
     #search these meeting ids in meetings
-    for i in range(len(meetingIDs)):
-        meeting = Meetings.objects.filter(meetingID = meetingIDs[i].meetingID.meetingID)
-        '''
-        if meeting.start is not None:
-            #this is the timezone to be converted
-            tz = pytz.timezone('Europe/Istanbul')
-            #convert event.start to tz timezone, event.start was utc before!!!
-            meeting.start = meeting.start.astimezone(tz)
-            meeting.end = meeting.end.astimezone(tz)
-            '''
-        partMeetings.append(meeting)
-    '''
+    for i in meetingIDs:
+        meeting = Meetings.objects.filter(meetingID = i.meetingID.meetingID)
+        for k in meeting:
+            try:
+                tz = pytz.timezone('Europe/Istanbul')
+                k.start = k.start.astimezone(tz)
+                k.end = k.end.astimezone(tz)
+                creatorUsername = User.objects.filter(id = k.creatorID.id)
+                partMeetings.append([k, creatorUsername[0].username])
+            except AttributeError:
+                creatorUsername = User.objects.filter(id = k.creatorID.id)
+                partMeetings.append([k, creatorUsername[0].username])
+    
+    #convert time for the creator's meetings
     for i in userMeetings:
-        if i.start is not None:
+        try:
             #this is the timezone to be converted
             tz = pytz.timezone('Europe/Istanbul')
             #convert event.start to tz timezone, event.start was utc before!!!
             i.start = i.start.astimezone(tz)
             i.end = i.end.astimezone(tz)
-    '''
+        except AttributeError:
+            continue
+    
     context = {
         'createdMeetings': userMeetings,
         'partMeetings': partMeetings,
@@ -55,14 +60,16 @@ def voting(request):
     parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
     #print(options[0].voteNumber)
     ## it should wait for response from the front
-    '''
-    if request.method=='POST':
-        MeetingEventID=request.POST['id']
-        result=MeetingEvents.objects.get(MeetingEventID = 1)
-        result.voteNumber+=1
-        result.save()
+    
+    if request.method == 'POST' and request.POST.get('ids'):
+        print(meetingID)
+        MeetingEventIDs=request.POST['ids']
+        for MeetingEventID in MeetingEventIDs:
+            result=MeetingEvents.objects.get(MeetingEventID = MeetingEventID)
+            result.voteNumber+=1
+            result.save()
         parc.is_voted=True
         parc.save()
-    '''
+    
     return render(request,'mymeetings/voting.html', {'options': options})
     

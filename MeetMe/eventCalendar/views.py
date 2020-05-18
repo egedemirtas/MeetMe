@@ -169,11 +169,11 @@ def createMeeting(request):
     #these are dummy, data must be received from request
     #creatorID = User.objects.get(username = "efehan") #user = request.user
     creatorID = request.user
-    meetingName = "Internship Interview"
+    meetingName = "Internship Interview1"
     is_decided = False
     location = "Istanbul/Kadikoy"
     note = "meet at starbucks"
-    participants = ["efehan", "dwayne"]
+    participants = ["kobee", "dwayne"]
     recurrence = "Weekly"
     a = datetime(2020, 5, 3, 9, 30, 00, 0)
     b = datetime(2020, 5, 3, 10, 30, 00, 0)
@@ -215,6 +215,7 @@ def createMeeting(request):
     args.append(request)
     args.append(participants)
     args.append(creatorID)
+    args.append(meeting.pk)
     timer = Timer(60.0, invitationReminder, args)
     timer.start()
 
@@ -255,19 +256,24 @@ def createMeeting(request):
     """
     return redirect('calendar')
 
-def invitationReminder(request,participants,creator):
+def invitationReminder(request,participants,creator,meetingID):
     #token = default_token_generator.make_token(user)
-    for part in participants:
-        partObj = User.objects.get(username=part)
-        current_site = get_current_site(request)
-        subject = 'This is a reminder that you have been invited by'+ str(creator.username) +" to participate in a poll."
-        message = render_to_string('eventCalendar/acceptInvitation.html', {
-                    'user': part,
-                    'domain': current_site.domain,
-                    'uid': urlsafe_base64_encode(force_bytes(partObj.pk)),
-                    'token': urlsafe_base64_encode(force_bytes(partObj.password)),
-                })
-        partObj.email_user(subject, message)
+    meeting = Meetings.objects.filter(meetingID=meetingID)#find the meeting object
+    if meeting[0].is_decided == False:#send reminder if the meeting hasnt been decided yet
+        for part in participants:
+            find_isVoted = MeetingParticipation.objects.filter(meetingID = meeting[0], partUsername=part)#find if the part has voted yet
+            print(find_isVoted)
+            if find_isVoted[0].is_voted == False:#send reminder only if the part hasnt voted
+                partObj = User.objects.get(username=part)
+                current_site = get_current_site(request)
+                subject = 'This is a reminder that you have been invited by '+ str(creator.username) +" to participate in a poll."
+                message = render_to_string('eventCalendar/acceptInvitation.html', {
+                            'user': partObj,
+                            'domain': current_site.domain,
+                            'uid': urlsafe_base64_encode(force_bytes(partObj.pk)),
+                            'token': urlsafe_base64_encode(force_bytes(partObj.password)),
+                        })
+                partObj.email_user(subject, message)
 
 
 
@@ -293,7 +299,7 @@ def acceptInvite(request,uidb64,token):
     if user is not None and user.password==force_text(urlsafe_base64_decode(token)):
              auth.login(request,user)
              print('User login')
-             return redirect('/eventCalendar/calendar')
+             return redirect('/mymeetings/mymeetings')
     else:
         print("Fatal Error")
 
