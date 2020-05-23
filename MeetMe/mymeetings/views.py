@@ -53,23 +53,43 @@ def myMeetings(request):
 
 def voting(request):
     user=request.user
-    #meetingID=16 ###
-    meetingID=request.POST['meetingID_r']
-    print("-------------",meetingID)
-    options=MeetingEvents.objects.filter(meetingID = meetingID)
-    parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
+    #meetingID=16     ###default
+
+    #print(request)
+    
+    if(request.POST.get('ids')!=None):
+        print("True")
+        print(request.POST.get('ids'))
+    else:
+        print(request.POST.get('ids'))
+        print("False")
+        #print(request.POST['ids'] )   ##
+        #MeetingEventIDs=request.POST['ids']   ## 
+    if request.method == 'POST':
+        print(request)    
+
+    
+    if request.method == 'POST':
+        #print("Posted meeting id: "+request.POST.get('meetingID_r'))
+        meetingID=request.POST['meetingID_r']
+        print("-------------",meetingID)
+        options=MeetingEvents.objects.filter(meetingID = meetingID)
+        parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
+   
     #print(options[0].voteNumber)
     ## it should wait for response from the front
+      
     
-    if request.method == 'POST' and request.POST.get('ids'):
-        print(meetingID)
-        MeetingEventIDs=request.POST['ids']
+    if request.method == 'POST' and (request.POST.get('ids')!=None):
+        print("After POST: ",meetingID)
+        MeetingEventIDs=(request.POST['ids']).split(',')
+        print(type(MeetingEventIDs))
         for MeetingEventID in MeetingEventIDs:
-            result=MeetingEvents.objects.get(MeetingEventID = MeetingEventID)
+            result=MeetingEvents.objects.get(meetingEventID = MeetingEventID)
             result.voteNumber+=1
             result.save()
         parc.is_voted=True
         parc.save()
     
-    return render(request,'mymeetings/voting.html', {'options': options})
+    return render(request,'mymeetings/voting.html', {'options': options,'meetingID_r':meetingID})
     

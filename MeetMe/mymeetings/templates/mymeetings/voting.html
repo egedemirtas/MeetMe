@@ -283,6 +283,7 @@
       </div>
     </div>
     {% endfor %}
+    {% csrf_token %}
     <button class="btn">Submit</button>
   </div>
 
@@ -360,17 +361,71 @@
 -->
 
 
-
-
 <script>
+  var meetingId='{{meetingID_r}}'
+
+  var csrftoken = '{{ csrf_token }}';
+
   var items = document.querySelectorAll('.option-container');
-  console.log(items)
+  var submitButton = document.querySelector('.btn');
+  var selectedItems = [];
 
   items.forEach(item => {
     item.addEventListener('click', () => {
       item.classList.toggle('selected-option');
-      item.querySelector("input").checked = !item.querySelector("input").checked;
     });
   });
+
+  submitButton.addEventListener("click", () => {
+    items.forEach(item => {
+      if (item.classList.contains("selected-option")) {
+        selectedItems.push(item.querySelector("input").value)
+      }
+
+    });
+
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function () {
+      if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+        if (xmlhttp.status == 200) {
+          alert("Your vote is send successfully, please close this alert");
+          selectedItems = [];
+          location.reload();
+        }
+        else if (xmlhttp.status == 400) {
+          alert('There was an error 400');
+          selectedItems = [];
+        }
+        else {
+          alert("Opps, failed!");
+          selectedItems = [];
+        }
+      }
+    };
+    var ids=selectedItems.join()
+    //xmlhttp.open("POST", `/mymeetings/voting?ids=${selectedItems.join()}`, true);
+    //xmlhttp.open("POST", `/mymeetings/voting`, true);
+    xmlhttp.open("POST", '/mymeetings/voting', true);
+    xmlhttp.withCredentials = true;
+    xmlhttp.setRequestHeader('X-CSRFToken', csrftoken); 
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.send('ids='+ids+'&meetingID_r='+meetingId);
+
+   /* if(xmlhttp.readyState === 4){
+      var csrfToken = xmlhttp.getResponseHeader('x-csrf-token');   
+
+      tryout.open('POST', '/odata/1.0/service.svc/Clients', false);
+      tryout.setRequestHeader('x-csrf-token', csrftoken);       
+      tryout.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+      tryout.setRequestHeader("Accept", "application/json");
+
+      tryout.send(JSON.stringify(obj));
+
+      if(tryout.readyState === 4){
+        res = JSON.parse(this.responseText);
+  }
+}*/
+  })
 
 </script>
