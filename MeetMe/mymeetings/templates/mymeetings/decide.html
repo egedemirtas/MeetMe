@@ -197,11 +197,11 @@
   
     <div class="row">
       {% for option in options %}
+      <div class="side">
+        <input type="radio" name="Option" id="option" value="{{ option.meetingEventID}}" />
+        <label class="option1" for="option">{{ option.start}}   {{option.end}}</label>
+      </div>
       <div class="option-container">
-        <div class="side">
-          <input type="radio" name="Option" id="option" value="{{ option.meetingEventID}}" />
-          <label class="option1" for="option">{{ option.start}}   {{option.end}}</label>
-        </div>
         <div>
           <div class="middle">
             <div class="bar-container">
