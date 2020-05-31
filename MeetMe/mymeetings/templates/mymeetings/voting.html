@@ -266,11 +266,11 @@
 
   <div class="row">
     {% for option in options %}
-    <div class="side">
+    <div class="option-container">
+      <div class="side">
       <input type="checkbox" name="Option" id="option" value="{{ option.meetingEventID}}" />
       <label class="option1" for="option">{{ option.start}}   {{option.end}}</label>
     </div>
-    <div class="option-container">
       <div>
         <div class="middle">
           <div class="bar-container">
