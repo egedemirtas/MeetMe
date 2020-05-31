@@ -25,15 +25,16 @@ def myMeetings(request):
     for i in meetingIDs:
         meeting = Meetings.objects.filter(meetingID = i.meetingID.meetingID)
         for k in meeting:
-            try:
-                tz = pytz.timezone('Europe/Istanbul')
-                k.start = k.start.astimezone(tz)
-                k.end = k.end.astimezone(tz)
-                creatorUsername = User.objects.filter(id = k.creatorID.id)
-                partMeetings.append([k, creatorUsername[0].username])
-            except AttributeError:
-                creatorUsername = User.objects.filter(id = k.creatorID.id)
-                partMeetings.append([k, creatorUsername[0].username])
+            if k.creatorID != user:
+                try:
+                    tz = pytz.timezone('Europe/Istanbul')
+                    k.start = k.start.astimezone(tz)
+                    k.end = k.end.astimezone(tz)
+                    creatorUsername = User.objects.filter(id = k.creatorID.id)
+                    partMeetings.append([k, creatorUsername[0].username])
+                except AttributeError:
+                    creatorUsername = User.objects.filter(id = k.creatorID.id)
+                    partMeetings.append([k, creatorUsername[0].username])
     
     #convert time for the creator's meetings
     for i in userMeetings:
@@ -119,9 +120,9 @@ def decide(request):
                 creator=True
             else:
                 creator=False
+
     if not creator:
         print("-----This is not a creator!!!!")
-
     else:    
         if request.method == 'POST' and (request.POST.get('ids')!=None):
             print("After POST: ",meetingID)
@@ -164,4 +165,22 @@ def finalMail(request,userID,meeting):
             })
     user.email_user(subject, message)
        
-    
+
+def edit(request):
+    meetingID=request.POST['meetingID_r']
+
+    meeting = Meetings.objects.get(meetingID = meetingID)
+
+    meetingEvents = MeetingEvents.objects.filter(meetingID = meeting)
+
+    participants = MeetingParticipation.objects.filter(meetingID = meeting)
+
+    context = {
+        'meeting': meeting,
+        'meetingEvents': meetingEvents,
+        'participants': participants
+    }
+    return render(request,'mymeetings/editMeetingDemo.html', context)
+
+def editComplete(request):
+    pass
