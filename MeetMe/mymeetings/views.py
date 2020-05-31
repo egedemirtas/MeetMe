@@ -93,3 +93,4 @@ def voting(request):
     
     return render(request,'mymeetings/voting.html', {'options': options,'meetingID_r':meetingID})
     
+    
