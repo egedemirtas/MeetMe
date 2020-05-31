@@ -167,7 +167,7 @@
 					<p><i style="font-size:18px" class="fa">&#xf0e5;</i> {{ created.note }}</p>
 					<p><i style="font-size:18px" class="fa">&#xf017;</i> {{ created.recurrence }}</p>			
 					<div class="row row-striped">
-					<form action="voting" method="POST">
+					<form action="decide" method="POST">
 						{% csrf_token %}
 						<button class="btn btn-outline-success" name="meetingID_r" type="submit" value="{{created.meetingID}}"
 						style="margin-left: 20px;">Decide</button>

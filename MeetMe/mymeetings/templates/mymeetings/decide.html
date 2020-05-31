@@ -269,7 +269,7 @@
       var ids=selectedItems.join()
       //xmlhttp.open("POST", `/mymeetings/voting?ids=${selectedItems.join()}`, true);
       //xmlhttp.open("POST", `/mymeetings/voting`, true);
-      xmlhttp.open("POST", '/mymeetings/voting', true);
+      xmlhttp.open("POST", '/mymeetings/decide', true);
       xmlhttp.withCredentials = true;
       xmlhttp.setRequestHeader('X-CSRFToken', csrftoken); 
       xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

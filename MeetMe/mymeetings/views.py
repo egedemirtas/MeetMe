@@ -4,6 +4,10 @@ from eventCalendar.models import Events, Meetings, MeetingParticipation, Meeting
 import calendar
 from datetime import datetime, timedelta
 import pytz
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 # Create your views here.
 def myMeetings(request):
     user = request.user
@@ -104,23 +108,60 @@ def decide(request):
     if request.method == 'POST':
             #print("Posted meeting id: "+request.POST.get('meetingID_r'))
             meetingID=request.POST['meetingID_r']
-            print("-------------",meetingID)
+            print("-------------meetingid: ",meetingID)
             options=MeetingEvents.objects.filter(meetingID = meetingID)
-            parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
+            parcs=MeetingParticipation.objects.filter(meetingID = meetingID)
             meeting=Meetings.objects.get(meetingID = meetingID)
-            creatorID=meeting.creatorID
+            creatorID=meeting.creatorID.id
+            print("---Creator id: ",creatorID)
+            print("---User id: ",user.id)
             if user.id == creatorID:
                 creator=True
             else:
                 creator=False
+    if not creator:
+        print("-----This is not a creator!!!!")
 
-    if request.method == 'POST' and (request.POST.get('ids')!=None):
-        print("After POST: ",meetingID)
-        MeetingEventID=request.POST['ids']
-        #print(type(MeetingEventID))
-        meeting.is_decided=True
+    else:    
+        if request.method == 'POST' and (request.POST.get('ids')!=None):
+            print("After POST: ",meetingID)
+            MeetingEventID=request.POST['ids']
+            #print(type(MeetingEventID))
+            meeting.is_decided=True
 
+            result=MeetingEvents.objects.get(meetingEventID = MeetingEventID)
+            meeting.start=result.start
+            meeting.end=result.end
+            meeting.save()
+
+            for parc in parcs:
+                finalizeMeeting(parc.partID,meeting,request)
+
+
+    return render(request,'mymeetings/decide.html', {'options': options,'meetingID_r':meetingID})
 
        
+def finalizeMeeting(parcID,meeting,request):
 
+    finalMail(request,parcID,meeting)
+
+    parc=User.objects.get(id=parcID)
+    event=Events(name=meeting.meetingName,start=meeting.start,end=meeting.end,userID=parc)
+    event.save()
+
+def finalMail(request,userID,meeting):
+    current_site = get_current_site(request)
+    
+    creator=meeting.creatorID
+    user=User.objects.get(id=userID)
+    subject = 'We have news for a meeting you have been invited by '+ str(creator.username)
+    message = render_to_string('mymeetings/finalMail.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'meeting':  meeting,
+                'token': urlsafe_base64_encode(force_bytes(user.password)),
+            })
+    user.email_user(subject, message)
+       
     
