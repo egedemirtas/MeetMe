@@ -169,8 +169,8 @@
 					<div class="row row-striped">
 					<form action="voting" method="POST">
 						{% csrf_token %}
-						<button class="btn btn-outline-info" name="meetingID_r" type="submit" value="{{created.meetingID}}"
-						style="margin-left: 20px;">Vote</button>
+						<button class="btn btn-outline-success" name="meetingID_r" type="submit" value="{{created.meetingID}}"
+						style="margin-left: 20px;">Decide</button>
 					</form>
 					<form action="edit" method="POST">
 						{% csrf_token %}
@@ -195,6 +195,10 @@
 					<h1 class="display-4"><span class="badge badge-secondary">{{part.0.start.day}}</span></h1>
 					<h2>{{ part.0.start|date:'F' }}</h2>
 					{% endif %}
+					{% if part.0.is_decided == False %}
+					<h1 class="display-4"><span class="badge badge-secondary">??</span></h1>
+					<h2>TBD</h2>
+					{% endif %}
 				</div>
 				<div class="col-10">
 					<h4 class="text-uppercase"><strong>{{ part.0.meetingName }}</strong></h4>
@@ -213,7 +217,7 @@
 					<p><i style="font-size:18px" class="fa">&#xf041;</i> {{ part.0.location }}</p>
 					<p><i style="font-size:18px" class="fa">&#xf0e5;</i> {{ part.0.note }}</p>
 					<p><i style="font-size:18px" class="fa">&#xf017;</i> {{ part.0.recurrence }}</p>	
-					<p><i style="font-size:24px" class="fa">&#xf2be;</i> Creator: {{ part.1 }}</p>
+					<p><b>Creator:</b> {{ part.1 }}</p>
 					<form action="voting" method="POST">
 						{% csrf_token %}
 						<button class="btn btn-outline-info" name="meetingID_r" type="submit" value="{{part.0.meetingID}}" style="margin-left: 20px;">Vote</button>
