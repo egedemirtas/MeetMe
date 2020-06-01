@@ -167,15 +167,23 @@
 					<p><i style="font-size:18px" class="fa">&#xf0e5;</i> {{ created.note }}</p>
 					<p><i style="font-size:18px" class="fa">&#xf017;</i> {{ created.recurrence }}</p>			
 					<div class="row row-striped">
+					{% if created.is_decided == False %}
 					<form action="decide" method="POST">
+						
 						{% csrf_token %}
 						<button class="btn btn-outline-success" name="meetingID_r" type="submit" value="{{created.meetingID}}"
 						style="margin-left: 20px;">Decide</button>
 					</form>
+					{% endif %}
 					<form action="edit" method="POST">
 						{% csrf_token %}
 						<button class="btn btn-outline-dark" name="meetingID_r" type="submit" value="{{created.meetingID}}"
 						style="margin-left: 10px;">Edit</button>
+					</form>
+					<form action="delete" method="POST">
+						{% csrf_token %}
+						<button class="btn btn-outline-danger" name="meetingID_r" type="submit" value="{{created.meetingID}}"
+						style="margin-left: 10px;">Delete</button>
 					</form>
 					</div>
 				</div>
@@ -218,11 +226,17 @@
 					<p><i style="font-size:18px" class="fa">&#xf0e5;</i> {{ part.0.note }}</p>
 					<p><i style="font-size:18px" class="fa">&#xf017;</i> {{ part.0.recurrence }}</p>	
 					<p><b>Creator:</b> {{ part.1 }}</p>
+					<div class="row row-striped">
 					<form action="voting" method="POST">
 						{% csrf_token %}
 						<button class="btn btn-outline-info" name="meetingID_r" type="submit" value="{{part.0.meetingID}}" style="margin-left: 20px;">Vote</button>
 					</form>
-					
+					<form action="delete" method="POST">
+						{% csrf_token %}
+						<button class="btn btn-outline-danger" name="meetingID_r" type="submit" value="{{created.meetingID}}"
+						style="margin-left: 10px;">Delete</button>
+					</form>
+				</div>
 				</div>
 			</div>
 		</div>

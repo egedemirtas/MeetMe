@@ -252,9 +252,9 @@
       xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == XMLHttpRequest.DONE) {
           if (xmlhttp.status == 200) {
-            alert("Your vote is send successfully, please close this alert");
+            alert("You decided meeting time successfully, please close this alert");
             selectedItems = [];
-            location.reload();
+            location.replace("http://localhost:8000/mymeetings/mymeetings");
           }
           else if (xmlhttp.status == 400) {
             alert('There was an error 400');

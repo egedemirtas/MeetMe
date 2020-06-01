@@ -284,7 +284,7 @@
     </div>
     {% endfor %}
     {% csrf_token %}
-    <button class="btn">Submit</button>
+    <button class="btn" id="button">Submit</button>
   </div>
 
 
@@ -370,6 +370,7 @@
   var submitButton = document.querySelector('.btn');
   var selectedItems = [];
 
+
   items.forEach(item => {
     item.addEventListener('click', () => {
       item.classList.toggle('selected-option');
@@ -383,7 +384,7 @@
       }
 
     });
-
+    
     var xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange = function () {
@@ -392,6 +393,7 @@
           alert("Your vote is send successfully, please close this alert");
           selectedItems = [];
           location.reload();
+          location.replace("http://localhost:8000/mymeetings/mymeetings");
         }
         else if (xmlhttp.status == 400) {
           alert('There was an error 400');
