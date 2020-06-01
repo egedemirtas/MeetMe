@@ -217,6 +217,45 @@
       x--;
     })
   });
+
+  document.querySelector("#save-this-meeting").addEventListener("click", () => {
+            var meetingName = document.querySelector("#meeting-name").value;
+            var location = document.querySelector("#location").value;
+            var note = document.querySelector("#note").value;
+            var participants = document.querySelector("#participants").value;
+            var importance = $("input[name='importance_for_meeting']:checked").val();
+            var recurrence = $("input[name='recurrence_for_meeting']:checked").val();
+            var optionsChildren = $(".options-form-fields").children();
+            var options = [];
+
+
+
+            for (var i = 0; i < optionsChildren.length; i++) {
+              var option = optionsChildren[i];
+              var jsonOption = {
+                'start_date': option.querySelector("[name='option_start_date']").value,
+                'start_time': option.querySelector("[name='option_start_time']").value,
+                'end_date': option.querySelector("[name='option_end_date']").value,
+                'end_time': option.querySelector("[name='option_end_time']").value
+              }
+              options.push(jsonOption)
+            }
+
+            $.ajax({
+              type: "POST",
+              url: 'createMeeting', // meeting endpoint
+              data: { 'meetingName': meetingName, 'location': location, 'note': note, 'participants': participants, 'className': importance, 'recurrence': recurrence, 'options': options },
+              dataType: "json",
+              success: function (data) {
+                calendar.refetchEvents();
+                location.reload();
+                alert("Edited Successfully");
+              },
+              failure: function (data) {
+                alert('There is a problem!!!');
+              }
+            });
+          })
 </script>
 </head>
 <body>

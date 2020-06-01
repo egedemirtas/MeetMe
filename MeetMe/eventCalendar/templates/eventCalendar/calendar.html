@@ -132,15 +132,6 @@
               options.push(jsonOption)
             }
 
-            // calendar.addEvent(
-            //   {
-            //     title: title,
-            //     start: arg.start,
-            //     end: arg.end,
-            //     allDay: arg.allDay
-            //   },
-            // );
-
             $.ajax({
               type: "GET",
               url: 'createMeeting', // meeting endpoint
@@ -615,9 +606,9 @@
               </div>
             </div>
             <div class="modal-footer">
-              <div class="form-actions">
+              <div class="form-actions"><a href="{% url 'mymeetings' %}">
                 <button class="btn btn-primary" data-dismiss="modal" type="button" id="add-this-meeting">Add this
-                  meeting</button>
+                  meeting</button></a>
                 <a class="btn btn-sm btn-white" data-dismiss="modal" href="javascript:void(0)"
                   id="cancel-button">Cancel</a>
               </div>
