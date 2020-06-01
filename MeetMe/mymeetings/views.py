@@ -182,6 +182,54 @@ def edit(request):
         'meetingEvents': meetingEvents,
         'participants': participants
     }
+    name='editedMeeting'
+    location='Bursa'
+    recurrence='Single'
+    start=''
+    end=''
+    note='editedNote'
+    meetingName = "Internship Interview1"
+    is_decided = False
+    location = "Istanbul/Kadikoy"
+    note = "meet at starbucks"
+    newParticipants = ["test1"]
+    recurrence = "Weekly"
+    a = datetime(2020, 5, 3, 9, 30, 00, 0)
+    b = datetime(2020, 5, 3, 10, 30, 00, 0)
+    c = datetime(2020, 5, 3, 11, 00, 00, 0)
+    d = datetime(2020, 5, 3, 14, 00, 00, 0)
+    e = datetime(2020, 5, 3, 17, 00, 00, 0)
+    f = datetime(2020, 5, 3, 23, 00, 00, 0)
+    meetingIntervals = [[a, b], [c, d], [e, f]]
+    
+    meeting.meetingName=name
+    meeting.location=location
+    meeting.note=note
+
+    if not meeting.is_decided:
+        meeting.recurrence=recurrence
+        ##for removing a participant
+        for parc in participants:
+            if parc.partUsername not in newParticipants:
+                MeetingEventIDs=(parc.meetingEventID).split(',')
+                for MeetingEventID in MeetingEventIDs:
+                    meetingEvent = MeetingEvents.objects.get(meetingEventID = MeetingEventID)
+                    meetingEvent.voteNumber-=1
+                    meetingEvent.save()
+
+                parc.delete()
+
+        ##for adding a participant
+        for newParc in newParticipants:
+            if newParc not in participants.username:
+                  newParcUser=User.objects.get(username=newParc)  
+                  addedParc=MeetingParticipation(meetingID=meeting.meetingID,meetingEventID=None,partID=newParcUser.id,partUsername=newParc,is_voted=False)
+                  addedParc.save()
+        ##for altering options
+                        
+
+        
+
     return render(request,'mymeetings/editMeetingDemo.html', context)
 
 def editComplete(request):
