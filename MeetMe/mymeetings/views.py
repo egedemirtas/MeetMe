@@ -155,7 +155,7 @@ def finalMail(request,userID,meeting):
     
     creator=meeting.creatorID
     user=User.objects.get(id=userID)
-    subject = 'We have news for a meeting you have been invited by '+ str(creator.username)
+    subject = 'We have news for a meeting that you have been invited created by '+ str(creator.username)+'.'
     message = render_to_string('mymeetings/finalMail.html', {
                 'user': user,
                 'domain': current_site.domain,
