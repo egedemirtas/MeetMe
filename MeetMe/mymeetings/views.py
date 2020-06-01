@@ -186,3 +186,49 @@ def edit(request):
 
 def editComplete(request):
     pass
+
+def delete(request):
+    meetingID=request.POST['meetingID_r']
+
+    #meeting to be deleted
+    meeting = Meetings.objects.get(meetingID = meetingID)
+
+    #this is the current user object
+    user = request.user
+    #meeting participants to be deleted
+    meetingParts = MeetingParticipation.objects.filter(meetingID = meeting.meetingID)
+    
+    #first send notification emails to the participants
+    for i in meetingParts:
+        print("current participant:", i.partUsername)
+        print("current user:", user.username)
+        if i.partUsername != user.username:#only notify participants, not creator
+            print("email has been sent to" , i.partUsername)
+            partObj = User.objects.get(username = i.partUsername)
+            deleteNotification(request, user, i.meetingID, partObj)
+    
+    #first delete participants
+    MeetingParticipation.objects.filter(meetingID = meeting.meetingID).delete()
+
+    #delete meeting events
+    MeetingEvents.objects.filter(meetingID = meeting.meetingID).delete()
+
+    #delete actual meeting
+    Meetings.objects.filter(meetingID = meetingID).delete()
+
+    return myMeetings(request)
+    #return redirect('myMeetings')
+
+def deleteNotification(request, user, meetingInfoObj, partObj):
+    current_site = get_current_site(request)
+
+    subject = 'MeetMe: Meeting Deleted by' + ': ' + user.username
+    message = render_to_string('mymeetings/deleteNotification.html', {
+                'creatorUser': user,
+                'partUser': partObj.username,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(partObj.pk)),
+                'meetingInfoObj':  meetingInfoObj,
+                'token': urlsafe_base64_encode(force_bytes(partObj.password)),
+            })
+    partObj.email_user(subject, message)

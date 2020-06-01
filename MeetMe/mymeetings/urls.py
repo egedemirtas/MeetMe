@@ -6,5 +6,6 @@ urlpatterns = [
     path('voting',views.voting, name='voting'),
     path('decide',views.decide, name='decide'),
     path('edit',views.edit, name='edit'),
-    path('editComplete',views.editComplete, name='editComplete')
+    path('editComplete',views.editComplete, name='editComplete'),
+    path('delete',views.delete, name='delete')
 ]
