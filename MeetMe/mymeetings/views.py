@@ -80,11 +80,11 @@ def voting(request):
         print("-------------",meetingID)
         options=MeetingEvents.objects.filter(meetingID = meetingID)
         parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
-        """creatorID=Meetings.objects.get(meetingID = meetingID).creatorID
-        if user.id == creatorID:
-            creator=True
-        else:
-            creator=False    """
+        selected=[]
+        if parc.is_voted==True:
+            selected=parc.meetingEventID.split(',')
+        print("------Items selected before: ",selected)    
+            
    
     #print(options[0].voteNumber)
     ## it should wait for response from the front
@@ -92,7 +92,9 @@ def voting(request):
     
     if request.method == 'POST' and (request.POST.get('ids')!=None):
         print("After POST: ",meetingID)
-        MeetingEventIDs=(request.POST['ids']).split(',')
+        requested=request.POST['ids']
+        parc.meetingEventID=requested
+        MeetingEventIDs=(requested).split(',')
         print(type(MeetingEventIDs))
         for MeetingEventID in MeetingEventIDs:
             result=MeetingEvents.objects.get(meetingEventID = MeetingEventID)
@@ -101,7 +103,7 @@ def voting(request):
         parc.is_voted=True
         parc.save()
     
-    return render(request,'mymeetings/voting.html', {'options': options,'meetingID_r':meetingID})
+    return render(request,'mymeetings/voting.html', {'options': options,'meetingID_r':meetingID,'selected':selected})
     
 def decide(request):
     user=request.user
