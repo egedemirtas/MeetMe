@@ -13,9 +13,11 @@ from django.template.loader import render_to_string
 
 from eventCalendar.models import Events, Meetings, MeetingParticipation, MeetingEvents
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import pytz
 from operator import itemgetter
 from django.contrib import auth
+import json
 # Create your views here.
 def calendar(request):
     user = request.user
@@ -92,13 +94,16 @@ def addEvent(request):
     #return render(request,'eventCalendar/addMeeting.html',context)
 
 def add_event(request):
-
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
+    className = request.GET.get("className", None)
+    recurrence = request.GET.get("recurrence", None)
+
     print("this is start:", start)
     print("this is end:", end)
     print("this is title:", title)
+    print("this is recurrence:", recurrence)
 
     start_unaware = datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
     start_aware = pytz.timezone('Europe/Istanbul').localize(start_unaware, is_dst=None)
@@ -109,35 +114,29 @@ def add_event(request):
     #end_utc = end_aware.astimezone(pytz.utc)
 
     userID = request.user
-    #event = Events(name=str(title), start=start, end=end, userID=userID)
-    event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
-    event.save()
-
-    """
-    #delete these if you want to use above part
-    if request.method == 'POST':
-        start=request.POST['start']
-        end=request.POST['end']
-        title = request.POST['title']
-        print(start)
-
-        userID = request.user
-        #event = Events(name=str(title), start=start_aware, end=end_aware, userID=userID)
-        event = Events(name=str(title), start=start, end=end, userID=userID)
+    if(recurrence == 'single'):
+        event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
         event.save()
-        return redirect('addEvent')
-
-    #for debug
-    user = request.user
-    userEvents = Events.objects.filter(userID = user)
-    for event in userEvents:
-        print(event.start)
-        #this is the timezone to be converted
-        tz = pytz.timezone('Europe/Istanbul')
-        #convert event.start to tz timezone, event.start was utc before!!!
-        start_Ist = event.start.astimezone(tz)
-        print("retrieved from db:", start_Ist)
-    """
+    elif(recurrence == 'weekly'):
+        for i in range(3):
+            event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
+            event.save()
+            start_aware = start_aware + timedelta(7)
+            end_aware = end_aware + timedelta(7)
+    elif(recurrence == 'monthly'):
+        delta = relativedelta(months=1)
+        for i in range(3):
+            event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
+            event.save()
+            start_aware = start_aware + delta
+            end_aware = end_aware + delta
+    elif(recurrence == 'quarterly'):
+        delta = relativedelta(months=3)
+        for i in range(3):
+            event = Events(name = title, start=start_aware, end=end_aware, userID=userID)
+            event.save()
+            start_aware = start_aware + delta
+            end_aware = end_aware + delta
     data = {}
     return JsonResponse(data)
 
@@ -169,24 +168,47 @@ def createMeeting(request):
     #these are dummy, data must be received from request
     #creatorID = User.objects.get(username = "efehan") #user = request.user
     creatorID = request.user
-    meetingName = "Internship Interview1"
-    is_decided = False
-    location = "Istanbul/Kadikoy"
-    note = "meet at starbucks"
-    participants = ["kobee", "dwayne"]
-    recurrence = "Weekly"
-    a = datetime(2020, 5, 3, 9, 30, 00, 0)
-    b = datetime(2020, 5, 3, 10, 30, 00, 0)
-    c = datetime(2020, 5, 3, 11, 00, 00, 0)
-    d = datetime(2020, 5, 3, 14, 00, 00, 0)
-    e = datetime(2020, 5, 3, 17, 00, 00, 0)
-    f = datetime(2020, 5, 3, 23, 00, 00, 0)
-    meetingIntervals = [[a, b], [c, d], [e, f]]
+    participants = (request.GET.get("participants", None)).split(",")
+    
+    meetingName = request.GET.get("meetingName", None)
+    print("Meeting name is", meetingName)
 
+    location = request.GET.get("location", None)
+    print("Meeting location is", location)
 
+    note = request.GET.get("note", None)
+    print("Meeting note is", note)
+
+    print("Meeting participants is", participants)
+
+    className = request.GET.get("className", None)
+    print("Meeting className is", className)
+
+    recurrence = request.GET.get("recurrence", None)
+    print("Meeting recurrence is", recurrence)
+
+    options = request.GET.get("options")
+    options = json.loads(options)
+
+    meetingIntervals = []
+    for i in options:
+        start_date = i['start_date']
+        start_time = i['start_time']
+        total_date = start_date+" "+start_time
+        start_date = datetime.strptime(total_date, '%Y-%m-%d %I:%M %p')
+        print(start_date)
+
+        end_date = i['end_date']
+        end_time = i['end_time']
+        total1_date = end_date+" "+end_time
+        end_date = datetime.strptime(total1_date, '%Y-%m-%d %I:%M %p')
+        print(end_date)
+
+        meetingIntervals.append([start_date, end_date])
+    
     #create meeting: participants is unnecessary
     meeting = Meetings.objects.create(creatorID=creatorID, meetingName=meetingName, 
-                is_decided=is_decided, location=location, note=note, participants=None, recurrence=recurrence)
+                is_decided=False, location=location, note=note, participants=None, recurrence=recurrence)
     meeting.save()
     print("saved meeting id is:", meeting.pk)
 
@@ -200,8 +222,6 @@ def createMeeting(request):
         partid = User.objects.get(username=i)#get the id of participant
         #for now since noone voted, meetingEventID is null(None)
         meetingParticipation = MeetingParticipation.objects.create(meetingID = meeting, meetingEventID=None, partUsername = i, partID = partid.id, is_voted=False)
-    
-    #invited meeting list is unnecessary
     
     #send invitations
     for part in participants:
@@ -218,42 +238,7 @@ def createMeeting(request):
     args.append(meeting.pk)
     timer = Timer(60.0, invitationReminder, args)
     timer.start()
-
-    '''
-    meetingName = request.POST['meetingName']
-    creatorID = request.user
-    user = User.objects.get(username = "test1")
-
-    invitation(request,user,creatorID)####
-
-    user2 = User.objects.get(username = "test2")
-    invitation(request,user2,creatorID)
-
-    beginLimit = request.POST["beginLimit"]
-    endLimit = request.POST["endLimit"]
-    print(beginLimit)
-    print(endLimit)
-    meetingDuration = request.POST["meetingDuration"]
-    meeting = Meetings.objects.create(meetingName = meetingName, creatorID = creatorID, beginLimit = beginLimit, endLimit = endLimit, meetingDuration = meetingDuration)
-
-    #save the same meeting for attendance
-    meetingID = meeting
-    partUsername = request.POST["partUsername"]
-    myList = partUsername.split(',')
-    attendance = False
-    for i in myList:
-        meetingPart = MeetingParticipation.objects.create(meetingID = meetingID, partUsername = i, attendance = attendance)
-    '''
-
-    """
-    ##start the timer
-    #timer = Timer(120.0, computeMeeting(meeting.meetingID))
-    args=[]
-    args.append(meeting.meetingID)
-    timer = Timer(90.0, computeMeeting,args)
-    timer.start()
-    ## check if all users have accepted
-    """
+    
     return redirect('calendar')
 
 def invitationReminder(request,participants,creator,meetingID):
