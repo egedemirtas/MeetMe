@@ -169,6 +169,7 @@ def createMeeting(request):
     #creatorID = User.objects.get(username = "efehan") #user = request.user
     creatorID = request.user
     participants = (request.GET.get("participants", None)).split(",")
+    participants.append(creatorID.username)
     
     meetingName = request.GET.get("meetingName", None)
     print("Meeting name is", meetingName)
@@ -225,9 +226,10 @@ def createMeeting(request):
     
     #send invitations
     for part in participants:
-        user = User.objects.get(username = part)
-        print(user.username)
-        invitation(request,user,creatorID)
+        if part != creatorID.username:
+            user = User.objects.get(username = part)
+            print(user.username)
+            invitation(request,user,creatorID)
 
     ##start the timer
     #timer = Timer(120.0, computeMeeting(meeting.meetingID))

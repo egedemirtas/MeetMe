@@ -96,13 +96,9 @@
             $.ajax({
               type: "GET",
               url: 'add_event',
-              data: { 'title': title, 'start': new_start_date, 'end': new_end_date, 'className': importance, 'recurrence': recurrence },
+              data: { 'title': title, 'start': start_date, 'end': end_date, 'className': importance, 'recurrence': recurrence },
               dataType: "json",
-              success: function (data) {
-                calendar.refetchEvents();
-                location.reload();
-                alert("Added Successfully");
-              },
+              
               failure: function (data) {
                 alert('There is a problem!!!');
               }
@@ -132,10 +128,19 @@
               options.push(jsonOption)
             }
 
+            // calendar.addEvent(
+            //   {
+            //     title: title,
+            //     start: arg.start,
+            //     end: arg.end,
+            //     allDay: arg.allDay
+            //   },
+            // );
+
             $.ajax({
               type: "GET",
               url: 'createMeeting', // meeting endpoint
-              data: { 'meetingName': meetingName, 'location': location, 'note': note, 'participants': participants, 'className': importance, 'recurrence': recurrence, 'options': options },
+              data: { 'meetingName': meetingName, 'location': location, 'note': note, 'participants': participants, 'className': importance, 'recurrence': recurrence, 'options': JSON.stringify(options) },
               dataType: "json",
               success: function (data) {
                 calendar.refetchEvents();
@@ -606,9 +611,9 @@
               </div>
             </div>
             <div class="modal-footer">
-              <div class="form-actions"><a href="{% url 'mymeetings' %}">
+              <div class="form-actions">
                 <button class="btn btn-primary" data-dismiss="modal" type="button" id="add-this-meeting">Add this
-                  meeting</button></a>
+                  meeting</button>
                 <a class="btn btn-sm btn-white" data-dismiss="modal" href="javascript:void(0)"
                   id="cancel-button">Cancel</a>
               </div>
