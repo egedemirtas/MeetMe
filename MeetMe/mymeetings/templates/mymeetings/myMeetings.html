@@ -231,11 +231,7 @@
 						{% csrf_token %}
 						<button class="btn btn-outline-info" name="meetingID_r" type="submit" value="{{part.0.meetingID}}" style="margin-left: 20px;">Vote</button>
 					</form>
-					<form action="delete" method="POST">
-						{% csrf_token %}
-						<button class="btn btn-outline-danger" name="meetingID_r" type="submit" value="{{created.meetingID}}"
-						style="margin-left: 10px;">Delete</button>
-					</form>
+					
 				</div>
 				</div>
 			</div>
