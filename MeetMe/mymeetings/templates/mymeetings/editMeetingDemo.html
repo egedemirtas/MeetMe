@@ -260,6 +260,10 @@
 </head>
 <body>
     <h1 style="margin-top:20px;">Edit the Meeting</h1>
+    {% if meeting.is_decided == True %}
+    <p>Start of meeting: {{meeting.start}}</p>
+    <p>End of meeting: {{meeting.end}}</p>
+    {%endif%}
     <div id='wrap'>
         <div id="meeting-form">
           <div class="modal-body">
@@ -285,6 +289,7 @@
               </div>
             </div>
             <div class="form-group row">
+              {% if meeting.is_decided == False %}
               <label class="col-md-2 form-control-label" for="participants">Participants:</label>
               <div class="col-md-10">
                 <input type="text" class="form-control" id="participants" name="participants">
@@ -366,6 +371,7 @@
               </div>
             </div>
           </div>
+          {%endif%}
           <div class="modal-footer">
             <div class="form-actions"><a href="{% url 'mymeetings' %}">
               <button class="btn btn-primary" data-dismiss="modal" type="button" id="save-this-meeting"
@@ -378,30 +384,16 @@
         </div>
       </form>
     </div>
-    <h1>Details</h1>
-    <p>Recurrence of meeting: {{meeting.recurrence}}</p>
-
-    <!-- If the creator of meeting has made a decision for the meeting's date, we will show this decision's date
-    if decision has not been made yet then this data does not exist -->
-    {% if meeting.is_decided == True %}
-    <p>Start of meeting: {{meeting.start}}</p>
-    <p>End of meeting: {{meeting.end}}</p>
-    {%endif%}
-
+    {% if meeting.is_decided == False %}
+    <h1>Previous Options</h1>
     {% for i in meetingEvents %}
-    <p>This is the start of date: {{i.start}}</p>
-    <p>This is the end of date: {{i.end}}</p>
-    <p>This is the number votes for this date: {{i.voteNumber}}</p>
+    <p>Start of date: {{i.start}}</p>
+    <p>End of date: {{i.end}}</p>
+    <p>Number votes for this date: {{i.voteNumber}}</p>
     <p>-------------------------------------</p>
     {% endfor %}
-
-    <p>***************************************</p>
-    <p>***************************************</p>
-    <p>***************************************</p>
-
-    {%for i in participants%}
-    <p>Participant name for the meeting: {{i.partUsername}}</p>
-    {%endfor%}
+    {%endif%}
+    
    
 </body>
 </html>
