@@ -98,7 +98,11 @@
               url: 'add_event',
               data: { 'title': title, 'start': start_date, 'end': end_date, 'className': importance, 'recurrence': recurrence },
               dataType: "json",
-              
+              success: function (data) {
+                calendar.refetchEvents();
+                location.reload();
+                alert("Added Successfully");
+              },
               failure: function (data) {
                 alert('There is a problem!!!');
               }

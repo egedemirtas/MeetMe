@@ -82,7 +82,7 @@
 
   /* Individual bars */
   .bar-5 {
-    width: 60%;
+    width: 1%;
     height: 18px;
     background-color: #4CAF50;
   }
@@ -264,35 +264,41 @@
 <hr style="border:3px solid #f1f1f1">
 
 
-  <div class="row">
-    {% for option in options %}
+<div class="row">
+  {% for option in options %}
+  <!-- option objesine `is_voted` gibi bir boolean donerseniz ona gore bu kod selected olanlari secili gosterir -->
+  {% if  option.is_voted %} 
+  <div class="option-container selected-option">
+    {% else %}
     <div class="option-container">
-      <div class="side">
+      {% endif%}
+      <!-- -->
+    <div class="side">
       <input type="checkbox" name="Option" id="option" value="{{ option.meetingEventID}}" />
-      <label class="option1" for="option">{{ option.start}}   {{option.end}}</label>
+      <label class="option1" for="option">{{ option.start}} {{option.end}}</label>
     </div>
-      <div>
-        <div class="middle">
-          <div class="bar-container">
-            <div class="bar-5"></div>
-          </div>
-        </div>
-        <div class="side right">
-          <div>{{ option.voteNumber }}</div><br>
+    <div>
+      <div class="middle">
+        <div class="bar-container">
+          <div class="bar-5" style="width: calc( 100% * {{option.voteNumber}} /{{totalVote}})"></div>
         </div>
       </div>
-    </div>
-    {% endfor %}
-    {% csrf_token %}
-    <button class="btn" id="button">Submit</button>
-    <div> 
-      {% for selection in selected %}
-        <div>
-          {{ selection }}
-        </div>
-      {% endfor %}  
+      <div class="side right">
+        <div>{{ option.voteNumber }}</div><br>
+      </div>
     </div>
   </div>
+  {% endfor %}
+  {% csrf_token %}
+  <button class="btn" id="button">Submit</button>
+  <div>
+    {% for selection in selected %}
+    <div>
+      {{ selection }}
+    </div>
+    {% endfor %}
+  </div>
+</div>
 
 
 <!--
@@ -369,7 +375,7 @@
 
 
 <script>
-  var meetingId='{{meetingID_r}}'
+  var meetingId = '{{meetingID_r}}'
 
   var csrftoken = '{{ csrf_token }}';
 
@@ -391,7 +397,7 @@
       }
 
     });
-    
+
     var xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange = function () {
@@ -412,29 +418,29 @@
         }
       }
     };
-    var ids=selectedItems.join()
+    var ids = selectedItems.join()
     //xmlhttp.open("POST", `/mymeetings/voting?ids=${selectedItems.join()}`, true);
     //xmlhttp.open("POST", `/mymeetings/voting`, true);
     xmlhttp.open("POST", '/mymeetings/voting', true);
     xmlhttp.withCredentials = true;
-    xmlhttp.setRequestHeader('X-CSRFToken', csrftoken); 
+    xmlhttp.setRequestHeader('X-CSRFToken', csrftoken);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send('ids='+ids+'&meetingID_r='+meetingId);
+    xmlhttp.send('ids=' + ids + '&meetingID_r=' + meetingId);
 
-   /* if(xmlhttp.readyState === 4){
-      var csrfToken = xmlhttp.getResponseHeader('x-csrf-token');   
-
-      tryout.open('POST', '/odata/1.0/service.svc/Clients', false);
-      tryout.setRequestHeader('x-csrf-token', csrftoken);       
-      tryout.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-      tryout.setRequestHeader("Accept", "application/json");
-
-      tryout.send(JSON.stringify(obj));
-
-      if(tryout.readyState === 4){
-        res = JSON.parse(this.responseText);
-  }
-}*/
+    /* if(xmlhttp.readyState === 4){
+       var csrfToken = xmlhttp.getResponseHeader('x-csrf-token');
+ 
+       tryout.open('POST', '/odata/1.0/service.svc/Clients', false);
+       tryout.setRequestHeader('x-csrf-token', csrftoken);
+       tryout.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+       tryout.setRequestHeader("Accept", "application/json");
+ 
+       tryout.send(JSON.stringify(obj));
+ 
+       if(tryout.readyState === 4){
+         res = JSON.parse(this.responseText);
+   }
+ }*/
   })
 
 </script>

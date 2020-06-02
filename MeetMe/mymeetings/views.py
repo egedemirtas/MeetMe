@@ -181,25 +181,25 @@ def finalizeMeeting(parcID,meeting,request):
     end=meeting.end
 
     if(meeting.recurrence == 'single'):
-        event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+        event=Events(name=meeting.meetingName,start=start,end=end,userID=parc, meetingID = meeting)
         event.save()
     elif(meeting.recurrence == 'weekly'):
         for i in range(3):
-            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc, meetingID = meeting)
             event.save()
             start = start + timedelta(7)
             end = end + timedelta(7)
     elif(meeting.recurrence == 'monthly'):
         delta = relativedelta(months=1)
         for i in range(3):
-            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc, meetingID = meeting)
             event.save()
             start = start + delta
             end = end + delta
     elif(meeting.recurrence == 'quarterly'):
         delta = relativedelta(months=3)
         for i in range(3):
-            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc, meetingID = meeting)
             event.save()
             start = start + delta
             end = end + delta
@@ -412,6 +412,9 @@ def delete(request):
 
     #delete actual meeting
     Meetings.objects.filter(meetingID = meetingID).delete()
+
+    #delete meeting's event from calendars
+    MeetingEvents.objects.filter(meetingID=meeting)
 
     return myMeetings(request)
     #return redirect('myMeetings')
