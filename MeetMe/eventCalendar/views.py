@@ -107,7 +107,7 @@ def profileSave(request):
             password = request.POST['password']
             password2 = request.POST['password2']
             updateUser = User.objects.filter(username = user)
-            if pasword == password2 and password != "":
+            if password == password2 and password != "":
                 updateUser.update(password=password)
         except:
             print("no password")

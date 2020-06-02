@@ -285,12 +285,11 @@ def edit(request):
         print("Meeting className is", className)
 
         
-
-        
         
         meeting.meetingName=name
         meeting.location=location
         meeting.note=note
+        meeting.save()
 
         if not meeting.is_decided:
             newParticipants = (request.GET.get("participants", None)).split(",")
@@ -301,22 +300,32 @@ def edit(request):
             options = json.loads(options)
 
             meeting.recurrence=recurrence
+            meeting.save()
+
             ##for removing a participant
             for parc in participants:
                 if parc.partUsername not in newParticipants:
                     MeetingEventIDs=(parc.meetingEventID).split(',')
+                    print("Delete part: ",parc.partUsername)
                     for MeetingEventID in MeetingEventIDs:
                         votedEvent = MeetingEvents.objects.get(meetingEventID = MeetingEventID)
                         votedEvent.voteNumber-=1
                         votedEvent.save()
 
                     parc.delete()
-
+            participants = MeetingParticipation.objects.filter(meetingID = meeting)
+        
+            
             ##for adding a participant
+            temp=[]
+            for i in participants:
+                temp.append(i.partUsername)
+
+            print(temp)    
             for newParc in newParticipants:
-                if newParc not in participants.username:
+                if newParc not in temp:
                     newParcUser=User.objects.get(username=newParc)  
-                    addedParc=MeetingParticipation(meetingID=meeting.meetingID,meetingEventID=None,partID=newParcUser.id,partUsername=newParc,is_voted=False)
+                    addedParc=MeetingParticipation(meetingID=meeting,meetingEventID=None,partID=newParcUser.id,partUsername=newParc,is_voted=False)
                     addedParc.save()
             ##for altering options
             meetingIntervals = []
@@ -335,12 +344,22 @@ def edit(request):
 
                 meetingIntervals.append([start_date, end_date])
 
+            tz = pytz.timezone('Europe/Istanbul')
             optionsChanged=False
-
+            
             for i in range(len(meetingIntervals)):
                 optionsChanged=True
                 for mEvent in meetingEvents:
-                    if (mEvent.start == meetingIntervals[i][0] and mEvent.end == meetingIntervals[i][1]):
+                    print("Options test:")
+                    
+                    start = mEvent.start.astimezone(tz)
+                    start=str(start).split('+')[0]
+                    end = mEvent.end.astimezone(tz)
+                    end=str(end).split('+')[0]
+                    print(start)
+                    print(meetingIntervals[i][0])
+                    if (start == str(meetingIntervals[i][0]) and end == str(meetingIntervals[i][1])):
+                            print("Found same")##
                             optionsChanged=False
                             break
                 if optionsChanged:
@@ -348,14 +367,14 @@ def edit(request):
             
             if(optionsChanged):
                 for mEvent in meetingEvents:
+                    print("Event to be deleted",mEvent.meetingEventID)
                     mEvent.delete()
-                    mEvent.save()
                 for meetParc in participants:
                     meetParc.is_voted=False
                     meetParc.meetingEventID=None
                     meetParc.save()
                 for i in range(len(meetingIntervals)):
-                    newMeetingsEvents = MeetingEvents.objects.create(meetingID = meeting.meetingID, start=meetingIntervals[i][0],end=meetingIntervals[i][1],voteNumber=0)
+                    newMeetingsEvents = MeetingEvents.objects.create(meetingID = meeting, start=meetingIntervals[i][0],end=meetingIntervals[i][1],voteNumber=0)
                     newMeetingsEvents.save()    
 
                         
