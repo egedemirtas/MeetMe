@@ -151,6 +151,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_ROOT= os.path.join(BASE_DIR, 'accounts/static/media')
+MEDIA_URL='/media/'
+
 LOGIN_URL = 'login'
 
 #for email service
@@ -163,7 +166,7 @@ EMAIL_HOST_USER = 'noreply.service.meetme@gmail.com'
 EMAIL_HOST_PASSWORD = 'egeefehan123'
 
 #Use first site as the site id
-SITE_ID=1
+SITE_ID=2
 
 #For google login redirect
 LOGIN_REDIRECT_URL= '/eventCalendar/calendar'
