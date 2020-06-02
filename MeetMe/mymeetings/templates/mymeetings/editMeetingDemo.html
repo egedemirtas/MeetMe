@@ -243,8 +243,8 @@
 
             $.ajax({
               type: "GET",
-              url: 'createMeeting', // meeting endpoint
-              data: { 'meetingName': meetingName, 'location': location, 'note': note, 'participants': participants, 'className': importance, 'recurrence': recurrence, 'options': options },
+              url: 'edit', // editing endpoint
+              data: { 'meetingName': meetingName, 'location': location, 'note': note, 'participants': participants, 'className': importance, 'recurrence': recurrence, 'options': JSON.stringify(options)},'meetingID_r':'{{meetingID_r}}',
               dataType: "json",
               success: function (data) {
                 calendar.refetchEvents();
@@ -255,6 +255,7 @@
                 alert('There is a problem!!!');
               }
             });
+            
           })
 </script>
 </head>
@@ -271,21 +272,21 @@
               <label class="col-md-2 form-control-label" for="meeting-name">Meeting Name:</label>
               <div class="col-md-10">
                 <input type="text" class="form-control" id="meeting-name" name="meeting-name"
-                value={{meeting.meetingName}}>
+                value="{{meeting.meetingName}}">
               </div>
             </div>
             <div class="form-group row">
               <label class="col-md-2 form-control-label" for="location">Location:</label>
               <div class="col-md-10">
                 <input type="text" class="form-control" id="location" name="location"
-                value={{meeting.location}}>
+                value="{{meeting.location}}">
               </div>
             </div>
             <div class="form-group row">
               <label class="col-md-2 form-control-label" for="note">Note:</label>
               <div class="col-md-10">
                 <input type="text" class="form-control" id="note" name="note"
-                value={{meeting.note}}>
+                value="{{meeting.note}}">
               </div>
             </div>
             <div class="form-group row">
@@ -373,7 +374,7 @@
           </div>
           {%endif%}
           <div class="modal-footer">
-            <div class="form-actions"><a href="{% url 'mymeetings' %}">
+            <div class="form-actions"><a href="{% url 'edit' %}">
               <button class="btn btn-primary" data-dismiss="modal" type="button" id="save-this-meeting"
               >Save this
                 meeting</button></a>

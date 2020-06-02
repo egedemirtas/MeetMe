@@ -21,6 +21,21 @@ def gCalendar(request):
     #events=str(events)
     #messages.info(request,events) 
     # #summary  title
+    userEvents = Events.objects.filter(userID=request.user)
+    for calendarEvent in userEvents:
+        #calendar = service.calendars().get(calendarId='primary').execute() ##get the main calendar
+        event = {}
+        event['summary']=calendarEvent.name
+        event['start']={}
+        start=str(calendarEvent.start).replace(' ','T')
+        event['start']['dateTime']=start
+        event['end']={}
+        end=str(calendarEvent.end).replace(' ','T')
+        event['end']['dateTime']=end
+
+        event = service.events().insert(calendarId='primary', body=event).execute()
+
+
     userID = request.user.id  #id for auth user
     for item in events['items']: 
         title=item['summary']

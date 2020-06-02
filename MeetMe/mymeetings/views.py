@@ -8,6 +8,8 @@ from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from dateutil.relativedelta import relativedelta
+import json
 # Create your views here.
 def myMeetings(request):
     user = request.user
@@ -82,7 +84,10 @@ def voting(request):
         parc=MeetingParticipation.objects.get(meetingID = meetingID ,partID=user.id)
         selected=[]
         if parc.is_voted==True:
-            selected=parc.meetingEventID.split(',')
+            if parc.meetingEventID==None:
+                selected=None
+            else:    
+                selected=parc.meetingEventID.split(',')
         print("------Items selected before: ",selected)    
             
    
@@ -93,15 +98,37 @@ def voting(request):
     if request.method == 'POST' and (request.POST.get('ids')!=None):
         print("After POST: ",meetingID)
         requested=request.POST['ids']
-        parc.meetingEventID=requested
-        MeetingEventIDs=(requested).split(',')
-        print(type(MeetingEventIDs))
-        for MeetingEventID in MeetingEventIDs:
-            result=MeetingEvents.objects.get(meetingEventID = MeetingEventID)
-            result.voteNumber+=1
-            result.save()
-        parc.is_voted=True
-        parc.save()
+        if(requested==''):
+            MeetingEventIDs=[]
+        else:    
+            MeetingEventIDs=(requested).split(',')
+
+        ## if a before selected event is unselected
+        if len(MeetingEventIDs)==0:
+            if parc.is_voted:
+                for i in selected:
+                    unselected=MeetingEvents.objects.get(meetingEventID = i)
+                    unselected.voteNumber-=1
+                    unselected.save()
+                parc.is_voted=False
+                parc.meetingEventID=None
+                parc.save()
+
+        else:
+            for i in selected:
+                if i not in MeetingEventIDs:
+                    unselected=MeetingEvents.objects.get(meetingEventID = i)
+                    unselected.voteNumber-=1
+                    unselected.save()
+            parc.meetingEventID=requested
+            print(type(MeetingEventIDs))
+            for MeetingEventID in MeetingEventIDs:
+                if(MeetingEventID not in selected):
+                    result=MeetingEvents.objects.get(meetingEventID = MeetingEventID)
+                    result.voteNumber+=1
+                    result.save()
+            parc.is_voted=True
+            parc.save()
     
     return render(request,'mymeetings/voting.html', {'options': options,'meetingID_r':meetingID,'selected':selected})
     
@@ -149,15 +176,43 @@ def finalizeMeeting(parcID,meeting,request):
     finalMail(request,parcID,meeting)
 
     parc=User.objects.get(id=parcID)
-    event=Events(name=meeting.meetingName,start=meeting.start,end=meeting.end,userID=parc)
-    event.save()
+    ##
+    start=meeting.start
+    end=meeting.end
+
+    if(meeting.recurrence == 'single'):
+        event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+        event.save()
+    elif(meeting.recurrence == 'weekly'):
+        for i in range(3):
+            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+            event.save()
+            start = start + timedelta(7)
+            end = end + timedelta(7)
+    elif(meeting.recurrence == 'monthly'):
+        delta = relativedelta(months=1)
+        for i in range(3):
+            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+            event.save()
+            start = start + delta
+            end = end + delta
+    elif(meeting.recurrence == 'quarterly'):
+        delta = relativedelta(months=3)
+        for i in range(3):
+            event=Events(name=meeting.meetingName,start=start,end=end,userID=parc)
+            event.save()
+            start = start + delta
+            end = end + delta
+
+    ##
+    
 
 def finalMail(request,userID,meeting):
     current_site = get_current_site(request)
     
     creator=meeting.creatorID
     user=User.objects.get(id=userID)
-    subject = 'We have news for a meeting that you have been invited created by '+ str(creator.username)+'.'
+    subject = 'We have news for a meeting that you have been invited, created by '+ str(creator.username)+' recurring '+meeting.recurrence+'.'
     message = render_to_string('mymeetings/finalMail.html', {
                 'user': user,
                 'domain': current_site.domain,
@@ -169,9 +224,16 @@ def finalMail(request,userID,meeting):
        
 
 def edit(request):
-    meetingID=request.POST['meetingID_r']
+    if request.method == 'POST':
+        meetingID = request.POST['meetingID_r']
+        print("----- POST Meeting id: ",meetingID)
 
-    meeting = Meetings.objects.get(meetingID = meetingID)
+    elif request.method == 'GET':   
+        meetingID = request.GET.get("meetingID_r", None)
+        #meetingID=16
+        print("----- GET Meeting id: ",meetingID) 
+
+    meeting=Meetings.objects.get(meetingID=meetingID)
 
     meetingEvents = MeetingEvents.objects.filter(meetingID = meeting)
 
@@ -180,9 +242,10 @@ def edit(request):
     context = {
         'meeting': meeting,
         'meetingEvents': meetingEvents,
-        'participants': participants
+        'participants': participants,
+        'meetingID_r':meetingID
     }
-    name='editedMeeting'
+    """ name='editedMeeting'
     location='Bursa'
     recurrence='Single'
     start=''
@@ -200,35 +263,102 @@ def edit(request):
     d = datetime(2020, 5, 3, 14, 00, 00, 0)
     e = datetime(2020, 5, 3, 17, 00, 00, 0)
     f = datetime(2020, 5, 3, 23, 00, 00, 0)
-    meetingIntervals = [[a, b], [c, d], [e, f]]
+    meetingIntervals = [[a, b], [c, d], [e, f]]"""
+
+    print("Before get")
     
-    meeting.meetingName=name
-    meeting.location=location
-    meeting.note=note
+    if request.method == 'GET':
+        print("After get")
 
-    if not meeting.is_decided:
-        meeting.recurrence=recurrence
-        ##for removing a participant
-        for parc in participants:
-            if parc.partUsername not in newParticipants:
-                MeetingEventIDs=(parc.meetingEventID).split(',')
-                for MeetingEventID in MeetingEventIDs:
-                    meetingEvent = MeetingEvents.objects.get(meetingEventID = MeetingEventID)
-                    meetingEvent.voteNumber-=1
-                    meetingEvent.save()
+        name = request.GET.get("meetingName", None)
+        print("Meeting name is", name)
 
-                parc.delete()
+        location = request.GET.get("location", None)
+        print("Meeting location is", location)
 
-        ##for adding a participant
-        for newParc in newParticipants:
-            if newParc not in participants.username:
-                  newParcUser=User.objects.get(username=newParc)  
-                  addedParc=MeetingParticipation(meetingID=meeting.meetingID,meetingEventID=None,partID=newParcUser.id,partUsername=newParc,is_voted=False)
-                  addedParc.save()
-        ##for altering options
-                        
+        note = request.GET.get("note", None)
+        print("Meeting note is", note)
 
         
+
+        className = request.GET.get("className", None)
+        print("Meeting className is", className)
+
+        
+
+        
+        
+        meeting.meetingName=name
+        meeting.location=location
+        meeting.note=note
+
+        if not meeting.is_decided:
+            newParticipants = (request.GET.get("participants", None)).split(",")
+            print("Meeting participants is", newParticipants)
+            recurrence = request.GET.get("recurrence", None)
+            print("Meeting recurrence is", recurrence)
+            options = request.GET.get("options")
+            options = json.loads(options)
+
+            meeting.recurrence=recurrence
+            ##for removing a participant
+            for parc in participants:
+                if parc.partUsername not in newParticipants:
+                    MeetingEventIDs=(parc.meetingEventID).split(',')
+                    for MeetingEventID in MeetingEventIDs:
+                        votedEvent = MeetingEvents.objects.get(meetingEventID = MeetingEventID)
+                        votedEvent.voteNumber-=1
+                        votedEvent.save()
+
+                    parc.delete()
+
+            ##for adding a participant
+            for newParc in newParticipants:
+                if newParc not in participants.username:
+                    newParcUser=User.objects.get(username=newParc)  
+                    addedParc=MeetingParticipation(meetingID=meeting.meetingID,meetingEventID=None,partID=newParcUser.id,partUsername=newParc,is_voted=False)
+                    addedParc.save()
+            ##for altering options
+            meetingIntervals = []
+            for i in options:
+                start_date = i['start_date']
+                start_time = i['start_time']
+                total_date = start_date+" "+start_time
+                start_date = datetime.strptime(total_date, '%Y-%m-%d %I:%M %p')
+                print(start_date)
+
+                end_date = i['end_date']
+                end_time = i['end_time']
+                total1_date = end_date+" "+end_time
+                end_date = datetime.strptime(total1_date, '%Y-%m-%d %I:%M %p')
+                print(end_date)
+
+                meetingIntervals.append([start_date, end_date])
+
+            optionsChanged=False
+
+            for i in range(len(meetingIntervals)):
+                optionsChanged=True
+                for mEvent in meetingEvents:
+                    if (mEvent.start == meetingIntervals[i][0] and mEvent.end == meetingIntervals[i][1]):
+                            optionsChanged=False
+                            break
+                if optionsChanged:
+                    break
+            
+            if(optionsChanged):
+                for mEvent in meetingEvents:
+                    mEvent.delete()
+                    mEvent.save()
+                for meetParc in participants:
+                    meetParc.is_voted=False
+                    meetParc.meetingEventID=None
+                    meetParc.save()
+                for i in range(len(meetingIntervals)):
+                    newMeetingsEvents = MeetingEvents.objects.create(meetingID = meeting.meetingID, start=meetingIntervals[i][0],end=meetingIntervals[i][1],voteNumber=0)
+                    newMeetingsEvents.save()    
+
+                        
 
     return render(request,'mymeetings/editMeetingDemo.html', context)
 

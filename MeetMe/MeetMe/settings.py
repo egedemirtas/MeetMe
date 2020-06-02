@@ -163,7 +163,7 @@ EMAIL_HOST_USER = 'noreply.service.meetme@gmail.com'
 EMAIL_HOST_PASSWORD = 'egeefehan123'
 
 #Use first site as the site id
-SITE_ID=2
+SITE_ID=1
 
 #For google login redirect
 LOGIN_REDIRECT_URL= '/eventCalendar/calendar'
