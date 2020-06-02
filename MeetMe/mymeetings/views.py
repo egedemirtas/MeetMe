@@ -11,6 +11,7 @@ from django.utils.encoding import force_bytes
 from dateutil.relativedelta import relativedelta
 import json
 # Create your views here.
+# Create your views here.
 def myMeetings(request):
     user = request.user
     partMeetings =[]
@@ -88,6 +89,7 @@ def voting(request):
                 selected=None
             else:    
                 selected=parc.meetingEventID.split(',')
+                
         print("------Items selected before: ",selected)    
             
    
@@ -103,6 +105,7 @@ def voting(request):
         else:    
             MeetingEventIDs=(requested).split(',')
 
+        
         ## if a before selected event is unselected
         if len(MeetingEventIDs)==0:
             if parc.is_voted:
@@ -129,8 +132,13 @@ def voting(request):
                     result.save()
             parc.is_voted=True
             parc.save()
+
+    totalVote=0
+    for option in options:
+        print("totalVote",  totalVote)
+        totalVote = totalVote + option.voteNumber 
     
-    return render(request,'mymeetings/voting.html', {'options': options,'meetingID_r':meetingID,'selected':selected})
+    return render(request,'mymeetings/voting.html', {'options': options,'totalVote':totalVote,'meetingID_r':meetingID,'selected':selected})
     
 def decide(request):
     user=request.user
@@ -150,6 +158,12 @@ def decide(request):
             else:
                 creator=False
 
+    totalVote=0
+    for option in options:
+        print("totalVote",  totalVote)
+        totalVote = totalVote + option.voteNumber 
+          
+
     if not creator:
         print("-----This is not a creator!!!!")
     else:    
@@ -168,7 +182,7 @@ def decide(request):
                 finalizeMeeting(parc.partID,meeting,request)
 
 
-    return render(request,'mymeetings/decide.html', {'options': options,'meetingID_r':meetingID})
+    return render(request,'mymeetings/decide.html', {'options': options,'totalVote':totalVote,'meetingID_r':meetingID})
 
        
 def finalizeMeeting(parcID,meeting,request):
@@ -245,26 +259,7 @@ def edit(request):
         'participants': participants,
         'meetingID_r':meetingID
     }
-    """ name='editedMeeting'
-    location='Bursa'
-    recurrence='Single'
-    start=''
-    end=''
-    note='editedNote'
-    meetingName = "Internship Interview1"
-    is_decided = False
-    location = "Istanbul/Kadikoy"
-    note = "meet at starbucks"
-    newParticipants = ["test1"]
-    recurrence = "Weekly"
-    a = datetime(2020, 5, 3, 9, 30, 00, 0)
-    b = datetime(2020, 5, 3, 10, 30, 00, 0)
-    c = datetime(2020, 5, 3, 11, 00, 00, 0)
-    d = datetime(2020, 5, 3, 14, 00, 00, 0)
-    e = datetime(2020, 5, 3, 17, 00, 00, 0)
-    f = datetime(2020, 5, 3, 23, 00, 00, 0)
-    meetingIntervals = [[a, b], [c, d], [e, f]]"""
-
+    
     print("Before get")
     
     if request.method == 'GET':
@@ -293,6 +288,7 @@ def edit(request):
 
         if not meeting.is_decided:
             newParticipants = (request.GET.get("participants", None)).split(",")
+            newParticipants.append(meeting.creatorID.username)
             print("Meeting participants is", newParticipants)
             recurrence = request.GET.get("recurrence", None)
             print("Meeting recurrence is", recurrence)
@@ -305,13 +301,17 @@ def edit(request):
             ##for removing a participant
             for parc in participants:
                 if parc.partUsername not in newParticipants:
-                    MeetingEventIDs=(parc.meetingEventID).split(',')
+                    if parc.meetingEventID != None:
+                        MeetingEventIDs=(parc.meetingEventID).split(',')
+                    else:
+                        MeetingEventIDs=[]
                     print("Delete part: ",parc.partUsername)
                     for MeetingEventID in MeetingEventIDs:
                         votedEvent = MeetingEvents.objects.get(meetingEventID = MeetingEventID)
                         votedEvent.voteNumber-=1
                         votedEvent.save()
 
+                    deletedParticipant(request,meeting,parc)
                     parc.delete()
             participants = MeetingParticipation.objects.filter(meetingID = meeting)
         
@@ -324,7 +324,8 @@ def edit(request):
             print(temp)    
             for newParc in newParticipants:
                 if newParc not in temp:
-                    newParcUser=User.objects.get(username=newParc)  
+                    newParcUser=User.objects.get(username=newParc)
+                    addedParticipant(request,meeting,newParcUser)  ##mail  
                     addedParc=MeetingParticipation(meetingID=meeting,meetingEventID=None,partID=newParcUser.id,partUsername=newParc,is_voted=False)
                     addedParc.save()
             ##for altering options
@@ -364,8 +365,10 @@ def edit(request):
                             break
                 if optionsChanged:
                     break
-            
+            participants = MeetingParticipation.objects.filter(meetingID = meeting)            
             if(optionsChanged):
+                for parc in participants:
+                    changedOpts(request,meeting,parc)
                 for mEvent in meetingEvents:
                     print("Event to be deleted",mEvent.meetingEventID)
                     mEvent.delete()
@@ -381,8 +384,49 @@ def edit(request):
 
     return render(request,'mymeetings/editMeetingDemo.html', context)
 
-def editComplete(request):
-    pass
+def changedOpts(request,meeting,parc):
+    current_site = get_current_site(request)
+    
+    creator=meeting.creatorID
+    user=User.objects.get(id=parc.partID)
+    subject = 'We have news for a meeting that you have been invited, created by '+ str(creator.username)+' recurring '+meeting.recurrence+'.'
+    message = render_to_string('mymeetings/changedOpts.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'meeting':  meeting,
+                'token': urlsafe_base64_encode(force_bytes(user.password)),
+            })
+    user.email_user(subject, message)
+ 
+def deletedParticipant(request,meeting,parc):
+    current_site = get_current_site(request)
+    
+    creator=meeting.creatorID
+    user=User.objects.get(id=parc.partID)
+    subject = 'We have news for a meeting that you have been invited, created by '+ str(creator.username)+' recurring '+meeting.recurrence+'.'
+    message = render_to_string('mymeetings/removedParc.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'meeting':  meeting,
+                'token': urlsafe_base64_encode(force_bytes(user.password)),
+            })
+    user.email_user(subject, message)
+def addedParticipant(request,meeting,parc):
+    current_site = get_current_site(request)
+    
+    creator=meeting.creatorID
+    user=parc
+    subject = 'You have been added to a meeting created by '+ str(creator.username)+' recurring '+meeting.recurrence+'.'
+    message = render_to_string('mymeetings/addedParc.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'meeting':  meeting,
+                'token': urlsafe_base64_encode(force_bytes(user.password)),
+            })
+    user.email_user(subject, message)   
 
 def delete(request):
     meetingID=request.POST['meetingID_r']
@@ -414,7 +458,7 @@ def delete(request):
     Meetings.objects.filter(meetingID = meetingID).delete()
 
     #delete meeting's event from calendars
-    MeetingEvents.objects.filter(meetingID=meeting)
+    MeetingEvents.objects.filter(meetingID=meeting).delete()
 
     return myMeetings(request)
     #return redirect('myMeetings')
