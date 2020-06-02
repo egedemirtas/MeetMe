@@ -12,12 +12,15 @@ from MeetMe.settings import EMAIL_HOST_USER
 from django.template.loader import render_to_string
 
 from eventCalendar.models import Events, Meetings, MeetingParticipation, MeetingEvents
+from accounts.models import Profile
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import pytz
 from operator import itemgetter
 from django.contrib import auth
 import json
+
+from django.core.files.storage import FileSystemStorage
 # Create your views here.
 def calendar(request):
     user = request.user
@@ -52,11 +55,73 @@ def calendar(request):
 def profile(request):
     user = request.user
     #all_events = Events.objects.all()
-
+    userProfile = Profile.objects.filter(user = user)
+    userInfo = User.objects.filter(username=user)
     context = {
+        'userProfile':userProfile,
+        'userInfo':userInfo,
     }
     #return render(request,'eventCalendar/calendar1.html',context)
     return render(request,'eventCalendar/profile.html',context)      ##testing
+
+def profileSave(request):
+    user = request.user
+    #save image
+    if request.method == 'POST':
+        try:
+            userProfile = Profile.objects.filter(user = user)
+            uploadedFile=request.FILES['picFile']
+            print(uploadedFile.name)
+            userProfile.update(image=uploadedFile)
+            fs = FileSystemStorage()
+            fs.save(uploadedFile.name, uploadedFile)
+        except:
+            print("no pic")
+    #save firstname,lastname
+    if request.method == 'POST':
+        try:
+            name = request.POST['name']
+            print(name)
+            nameList = name.split()
+            print(nameList)
+            first_name = nameList[0]
+            last_name = nameList[1]
+            updateUser = User.objects.filter(username = user)
+            updateUser.update(first_name=first_name, last_name=last_name)
+        except:
+            print("no name")
+
+    #save email
+    if request.method == 'POST':
+        try:
+            email = request.POST['email']
+            if email != "":
+                updateUser = User.objects.filter(username = user)
+                updateUser.update(email=email)
+        except:
+            print("no email")
+
+    #save password
+    if request.method == 'POST':
+        try:
+            password = request.POST['password']
+            password2 = request.POST['password2']
+            updateUser = User.objects.filter(username = user)
+            if pasword == password2 and password != "":
+                updateUser.update(password=password)
+        except:
+            print("no password")
+
+
+    #all_events = Events.objects.all()
+    userProfile = Profile.objects.filter(user = user)
+    userInfo = User.objects.filter(username=user)
+    context = {
+        'userProfile':userProfile,
+        'userInfo':userInfo,
+    }
+    #return render(request,'eventCalendar/calendar1.html',context)
+    return render(request,'eventCalendar/profile.html',context) 
 
 def addMeeting(request):
     user = request.user

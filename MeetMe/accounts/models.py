@@ -8,6 +8,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField(max_length=150)
     signup_confirmation = models.BooleanField(default=False)
+    image = models.ImageField(null=True, blank=True, default="default.png")
     
     def __str__(self):
         return self.user.username

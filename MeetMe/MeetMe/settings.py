@@ -151,6 +151,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_ROOT= os.path.join(BASE_DIR, 'accounts/static/media')
+MEDIA_URL='/media/'
+
 LOGIN_URL = 'login'
 
 #for email service
