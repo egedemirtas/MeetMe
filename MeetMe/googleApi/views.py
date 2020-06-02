@@ -37,19 +37,23 @@ def gCalendar(request):
 
 
     userID = request.user.id  #id for auth user
-    for item in events['items']: 
-        title=item['summary']
-        start=item['start'].get('dateTime','NA')
-        end=item['end'].get('dateTime','NA')
-        if(start=='NA'):   ##For unspecified hour/minutes
-            start=item['start']['date']
-        if(end=='NA'):
-            end=item['end']['date']
-        #print(end.keys())
-        print('{}, {}, {}'.format(title,start,end))
-        event = Events(name=str(title), start=start, end=end, userID_id=userID)
-        if not(Events.objects.filter(name=title,start=start,end=end, userID_id=userID).exists()): ##if it is not in db
-            event.save()
+    for item in events['items']:
+        try:
+            if item['status'] != 'cancelled':
+                title=item['summary']
+                start=item['start'].get('dateTime','NA')
+                end=item['end'].get('dateTime','NA')
+                if(start=='NA'):   ##For unspecified hour/minutes
+                    start=item['start']['date']
+                if(end=='NA'):
+                    end=item['end']['date']
+                #print(end.keys())
+                print('{}, {}, {}'.format(title,start,end))
+                event = Events(name=str(title), start=start, end=end, userID_id=userID)
+                if not(Events.objects.filter(name=title,start=start,end=end, userID_id=userID).exists()): ##if it is not in db
+                    event.save()
+        except:
+            print("exception occurred")
 
 
     return redirect('calendar')
