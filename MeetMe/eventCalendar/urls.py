@@ -13,4 +13,5 @@ urlpatterns = [
     path('remove', views.remove, name='remove'),
     path('createMeeting', views.createMeeting, name='createMeeting'),
     path('acceptInvite/<slug:uidb64>/<slug:token>/', views.acceptInvite, name='acceptInvite'),
+    path('profileSave', views.profileSave, name='profileSave'),
 ]

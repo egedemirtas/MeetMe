@@ -82,7 +82,7 @@
 
   /* Individual bars */
   .bar-5 {
-    width: 60%;
+    width: 1%;
     height: 18px;
     background-color: #4CAF50;
   }
@@ -264,27 +264,35 @@
 <hr style="border:3px solid #f1f1f1">
 
 
-  <div class="row">
-    {% for option in options %}
+<div class="row">
+  {% for option in options %}
+  <!-- option objesine `is_voted` gibi bir boolean donerseniz ona gore bu kod selected olanlari secili gosterir -->
+  {% if  option.is_voted %} 
+  <div class="option-container selected-option">
+    {% else %}
     <div class="option-container">
-      <div class="side">
-        <input type="checkbox" name="Option" id="option" value="{{ option.meetingEventID}}" />
-        <label class="option1" for="option">{{ option.start}}   {{option.end}}</label>
+      {% endif%}
+      <!-- -->
+    <div class="side">
+      <input type="checkbox" name="Option" id="option" value="{{ option.meetingEventID}}" />
+      <label class="option1" for="option">{{ option.start}} {{option.end}}</label>
+    </div>
+    <div>
+      <div class="middle">
+        <div class="bar-container">
+          <div class="bar-5" style="width: calc( 100% * {{option.voteNumber}} /{{totalVote}})"></div>
+        </div>
       </div>
-      <div>
-        <div class="middle">
-          <div class="bar-container">
-            <div class="bar-5"></div>
-          </div>
-        </div>
-        <div class="side right">
-          <div>{{ option.voteNumber }}</div><br>
-        </div>
+      <div class="side right">
+        <div>{{ option.voteNumber }}</div><br>
       </div>
     </div>
-    {% endfor %}
-    <button class="btn">Submit</button>
   </div>
+  {% endfor %}
+  {% csrf_token %}
+  <button class="btn" id="button">Submit</button>
+  
+</div>
 
 
 <!--
@@ -360,17 +368,73 @@
 -->
 
 
-
-
 <script>
+  var meetingId = '{{meetingID_r}}'
+
+  var csrftoken = '{{ csrf_token }}';
+
   var items = document.querySelectorAll('.option-container');
-  console.log(items)
+  var submitButton = document.querySelector('.btn');
+  var selectedItems = [];
+
 
   items.forEach(item => {
     item.addEventListener('click', () => {
       item.classList.toggle('selected-option');
-      item.querySelector("input").checked = !item.querySelector("input").checked;
     });
   });
+
+  submitButton.addEventListener("click", () => {
+    items.forEach(item => {
+      if (item.classList.contains("selected-option")) {
+        selectedItems.push(item.querySelector("input").value)
+      }
+
+    });
+
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function () {
+      if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+        if (xmlhttp.status == 200) {
+          alert("Your vote is send successfully, please close this alert");
+          selectedItems = [];
+          location.reload();
+          location.replace("http://localhost:8000/mymeetings/mymeetings");
+        }
+        else if (xmlhttp.status == 400) {
+          alert('There was an error 400');
+          selectedItems = [];
+        }
+        else {
+          alert("Opps, failed!");
+          selectedItems = [];
+        }
+      }
+    };
+    var ids = selectedItems.join()
+    //xmlhttp.open("POST", `/mymeetings/voting?ids=${selectedItems.join()}`, true);
+    //xmlhttp.open("POST", `/mymeetings/voting`, true);
+    xmlhttp.open("POST", '/mymeetings/voting', true);
+    xmlhttp.withCredentials = true;
+    xmlhttp.setRequestHeader('X-CSRFToken', csrftoken);
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.send('ids=' + ids + '&meetingID_r=' + meetingId);
+
+    /* if(xmlhttp.readyState === 4){
+       var csrfToken = xmlhttp.getResponseHeader('x-csrf-token');
+ 
+       tryout.open('POST', '/odata/1.0/service.svc/Clients', false);
+       tryout.setRequestHeader('x-csrf-token', csrftoken);
+       tryout.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+       tryout.setRequestHeader("Accept", "application/json");
+ 
+       tryout.send(JSON.stringify(obj));
+ 
+       if(tryout.readyState === 4){
+         res = JSON.parse(this.responseText);
+   }
+ }*/
+  })
 
 </script>

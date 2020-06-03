@@ -21,20 +21,39 @@ def gCalendar(request):
     #events=str(events)
     #messages.info(request,events) 
     # #summary  title
+    userEvents = Events.objects.filter(userID=request.user)
+    for calendarEvent in userEvents:
+        #calendar = service.calendars().get(calendarId='primary').execute() ##get the main calendar
+        event = {}
+        event['summary']=calendarEvent.name
+        event['start']={}
+        start=str(calendarEvent.start).replace(' ','T')
+        event['start']['dateTime']=start
+        event['end']={}
+        end=str(calendarEvent.end).replace(' ','T')
+        event['end']['dateTime']=end
+
+        event = service.events().insert(calendarId='primary', body=event).execute()
+
+
     userID = request.user.id  #id for auth user
-    for item in events['items']: 
-        title=item['summary']
-        start=item['start'].get('dateTime','NA')
-        end=item['end'].get('dateTime','NA')
-        if(start=='NA'):   ##For unspecified hour/minutes
-            start=item['start']['date']
-        if(end=='NA'):
-            end=item['end']['date']
-        #print(end.keys())
-        print('{}, {}, {}'.format(title,start,end))
-        event = Events(name=str(title), start=start, end=end, userID_id=userID)
-        if not(Events.objects.filter(name=title,start=start,end=end, userID_id=userID).exists()): ##if it is not in db
-            event.save()
+    for item in events['items']:
+        try:
+            if item['status'] != 'cancelled':
+                title=item['summary']
+                start=item['start'].get('dateTime','NA')
+                end=item['end'].get('dateTime','NA')
+                if(start=='NA'):   ##For unspecified hour/minutes
+                    start=item['start']['date']
+                if(end=='NA'):
+                    end=item['end']['date']
+                #print(end.keys())
+                print('{}, {}, {}'.format(title,start,end))
+                event = Events(name=str(title), start=start, end=end, userID_id=userID)
+                if not(Events.objects.filter(name=title,start=start,end=end, userID_id=userID).exists()): ##if it is not in db
+                    event.save()
+        except:
+            print("exception occurred")
 
 
     return redirect('calendar')
