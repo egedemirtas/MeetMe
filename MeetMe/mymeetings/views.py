@@ -253,10 +253,19 @@ def edit(request):
 
     participants = MeetingParticipation.objects.filter(meetingID = meeting)
 
+    partStr=""
+    counter = 0
+    for part in participants:
+        if len(participants)-1 != counter:
+            partStr = partStr + str(part.partUsername) + ','
+            counter = counter + 1
+        else:
+            partStr = partStr + str(part.partUsername)
+
     context = {
         'meeting': meeting,
         'meetingEvents': meetingEvents,
-        'participants': participants,
+        'participants': partStr,
         'meetingID_r':meetingID
     }
     
